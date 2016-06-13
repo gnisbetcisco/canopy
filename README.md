@@ -1,2 +1,2 @@
-# acanopy
-A Python SDK for Cisco Acano
+# canopy
+Canopy n. A Python SDK for Cisco Acano
