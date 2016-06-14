@@ -6,7 +6,7 @@
 Welcome to Canopy's documentation!
 ==================================
 
-Contents:
+Contents high level:
 
 .. toctree::
    :maxdepth: 2
