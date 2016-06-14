@@ -277,8 +277,7 @@ class Acano:
 		:param payload: Details the member to add. Must contain the User JID.
 		:type payload: Dict
 		
-		:Example:
-		print(a.add_member_to_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload {
+		:Example: print(a.add_member_to_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload {
 			'userJid' : a.get_coSpace_members()["coSpaceMembers]
 			}))
 
