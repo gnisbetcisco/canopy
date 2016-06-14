@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to Canopy’s documentation! &mdash; Canopy 0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Canopy 0 documentation" href="#" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Canopy 0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-canopy-s-documentation">
+<h1>Welcome to Canopy&#8217;s documentation!<a class="headerlink" href="#welcome-to-canopy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-Canopy"></span><dl class="class">
+<dt id="Canopy.Acano">
+<em class="property">class </em><code class="descclassname">Canopy.</code><code class="descname">Acano</code><span class="sig-paren">(</span><em>server_ip</em>, <em>username</em>, <em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Acano Server class</p>
+<p>Use this class to connect and make API calls to an Acano Virtual Machine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>server_ip</strong> (<em>String</em>) &#8211; The IP Address of the server</li>
+<li><strong>username</strong> (<em>String</em>) &#8211; The username of an account with access to the API.</li>
+<li><strong>password</strong> (<em>String</em>) &#8211; The password for your user account</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">return an Acano object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">class Acano</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>import AcanoPy 
+a = AcanoPy.Acano(&#8220;192.168.12.10&#8221;, &#8220;admin&#8221;, &#8220;guest&#8221;)</p>
+<dl class="method">
+<dt id="Canopy.Acano.add_member_to_coSpace">
+<code class="descname">add_member_to_coSpace</code><span class="sig-paren">(</span><em>coSpace_id</em>, <em>payload={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.add_member_to_coSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.add_member_to_coSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a member to the coSpace, using the coSpace ID as the identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coSpace_id</strong> (<em>String</em>) &#8211; The ID of the coSpace for which to add a member. This can be returned from the get_coSpaces()[&#8220;coSpaces&#8221;][&#8220;coSpace&#8221;][i][&#8220;&#64;id&#8221;]</li>
+<li><strong>payload</strong> (<em>Dict</em>) &#8211; Details the member to add. Must contain the User JID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>print(a.add_member_to_coSpace(&#8220;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#8221;, payload {</dt>
+<dd>&#8216;userJid&#8217; : a.get_coSpace_members()[&#8220;coSpaceMembers]
+}))</dd>
+</dl>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Canopy.Acano.create_coSpace">
+<code class="descname">create_coSpace</code><span class="sig-paren">(</span><em>payload={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.create_coSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.create_coSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new coSpace</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>payload</strong> (<em>Dict</em>) &#8211; Details the initial state of the newly created coSpace</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>print(a.create_coSpace())</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>print(a.create_coSpace(payload = {</dt>
+<dd>&#8216;name&#8217; : &#8216;Emergency meeting&#8217;
+}))</dd>
+</dl>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Canopy.Acano.delete_coSpace">
+<code class="descname">delete_coSpace</code><span class="sig-paren">(</span><em>coSpace_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.delete_coSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.delete_coSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a coSpace, using the coSpace ID as the identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coSpace_id</strong> (<em>String</em>) &#8211; The ID of the coSpace to delete. This can be returned from the get_coSpaces()[&#8220;coSpaces&#8221;][&#8220;coSpace&#8221;][i][&#8220;&#64;id&#8221;]</li>
+<li><strong>payload</strong> (<em>Dict</em>) &#8211; Details the new state of the identified coSpace</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>print(a.delete_coSpace(&#8220;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#8221;))</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Canopy.Acano.get_coSpace">
+<code class="descname">get_coSpace</code><span class="sig-paren">(</span><em>coSpace_id</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.get_coSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.get_coSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the details of a coSpace, using the coSpace ID as the identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coSpace_id</strong> (<em>String</em>) &#8211; The ID of the coSpace to modify. This can be returned from the get_coSpaces()[&#8220;coSpaces&#8221;][&#8220;coSpace&#8221;][i][&#8220;&#64;id&#8221;]</li>
+<li><strong>payload</strong> (<em>Dict</em>) &#8211; Details the new state of the identified coSpace</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>print(a.get_coSpace(&#8220;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#8221;))</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Canopy.Acano.get_coSpace_members">
+<code class="descname">get_coSpace_members</code><span class="sig-paren">(</span><em>coSpace_id</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.get_coSpace_members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.get_coSpace_members" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the members in a coSpace, using the coSpace ID as the identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coSpace_id</strong> (<em>String</em>) &#8211; The ID of the coSpace for which to get members. This can be returned from the get_coSpaces()[&#8220;coSpaces&#8221;][&#8220;coSpace&#8221;][i][&#8220;&#64;id&#8221;]</li>
+<li><strong>parameters</strong> (<em>Dict</em>) &#8211; Details the parameters of the HTTP GET</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>print(a.get_coSpace_members(&#8220;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#8221;))</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Canopy.Acano.get_coSpaces">
+<code class="descname">get_coSpaces</code><span class="sig-paren">(</span><em>parameters={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.get_coSpaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.get_coSpaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the coSpaces within the Acano VM. These are returned in an arbitrary order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters</strong> (<em>Dict</em>) &#8211; A dictionary of parameters, per the Acano API.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>print(a.get_coSpaces())</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>print(a.get_coSpaces(parameters = {</dt>
+<dd>&#8216;offset&#8217; : 5
+}))</dd>
+</dl>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Canopy.Acano.modify_coSpace">
+<code class="descname">modify_coSpace</code><span class="sig-paren">(</span><em>coSpace_id</em>, <em>payload</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Canopy.html#Acano.modify_coSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Canopy.Acano.modify_coSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make changes to an existing coSpace, using the coSpace ID as the identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coSpace_id</strong> (<em>String</em>) &#8211; The ID of the coSpace to modify. This can be returned from the get_coSpaces()[&#8220;coSpaces&#8221;][&#8220;coSpace&#8221;][i][&#8220;&#64;id&#8221;]</li>
+<li><strong>payload</strong> (<em>Dict</em>) &#8211; Details the new state of the identified coSpace</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>print(a.modify_coSpace(&#8220;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#8221;, payload = {</dt>
+<dd>&#8220;name&#8221; : &#8220;Modified coSpace&#8221;
+}))</dd>
+</dl>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf">https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Canopy&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Canopy 0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, George Nisbet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>
