@@ -189,7 +189,7 @@ class Acano:
 			'name' : 'Emergency meeting'
 			}))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
 
 		"""
 		return self.__open__("coSpaces", payload = payload, HTTPmethod='POST')
@@ -208,7 +208,7 @@ class Acano:
 			"name" : "Modified coSpace"
 			}))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
 
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), payload = payload, HTTPmethod = 'PUT')
@@ -224,7 +224,7 @@ class Acano:
 		
 		:Example: print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=27
 
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), parameters = parameters)
@@ -240,7 +240,9 @@ class Acano:
 		
 		:Example: print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
+
+		.. note:: This function is not specifically documented in the API reference guide
 
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), HTTPmethod = "delete".upper())
