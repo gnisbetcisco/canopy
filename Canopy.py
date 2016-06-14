@@ -161,13 +161,13 @@ class Acano:
 		:type parameters: Dict
 		
 		:Example:
-		print(a.get_coSpaces())
+			>>> print(a.get_coSpaces())
 
 		:Example:
 
-		print(a.get_coSpaces(parameters = {
-			'offset' : 5
-			}))
+			>>> print(a.get_coSpaces(parameters = {
+			>>> 'offset' : 5
+			>>> }))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
@@ -181,13 +181,13 @@ class Acano:
 		:type payload: Dict
 		
 		:Example:
-		print(a.create_coSpace())
+			>>> print(a.create_coSpace())
 
 		:Example:
 
-		print(a.create_coSpace(payload = {
-			'name' : 'Emergency meeting'
-			}))
+			>>>	print(a.create_coSpace(payload = {
+			>>>	'name' : 'Emergency meeting'
+			>>>	}))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
@@ -204,9 +204,9 @@ class Acano:
 		:type payload: Dict
 		
 		:Example:
-		print(a.modify_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload = {
-			"name" : "Modified coSpace"
-			}))
+			>>>	print(a.modify_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload = {
+			>>>	"name" : "Modified coSpace"
+			>>>	}))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
@@ -223,7 +223,7 @@ class Acano:
 		:type payload: Dict
 		
 		:Example:
-		print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
+			>>> print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
@@ -240,7 +240,7 @@ class Acano:
 		:type payload: Dict
 		
 		:Example:
-		print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
+			>>> print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
@@ -262,7 +262,7 @@ class Acano:
 		:type parameters: Dict
 		
 		:Example:
-		print(a.get_coSpace_members("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
+		>>> print(a.get_coSpace_members("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
@@ -279,9 +279,9 @@ class Acano:
 		:type payload: Dict
 		
 		:Example:
-		print(a.add_member_to_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload {
-			'userJid' : a.get_coSpace_members()["coSpaceMembers]
-			}))
+			>>> print(a.add_member_to_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload {
+			>>> 'userJid' : a.get_coSpace_members()["coSpaceMembers]
+			>>> }))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
 
