@@ -43,10 +43,11 @@ class Acano:
 	:return: return an Acano object
 	:rtype: class Acano
 
-	Example::
+	:Example:
+	::
 
 		import AcanoPy 
-		a = AcanoPy.Acano("192.168.12.10", "admin", "guest")
+		a = AcanoPy.Acano("192.168.12.100", "admin", "guest")
 	
 
 	"""
