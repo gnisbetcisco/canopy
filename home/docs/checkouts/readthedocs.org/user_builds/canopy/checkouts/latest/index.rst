@@ -6,7 +6,7 @@
 Welcome to Canopy's documentation!
 ==================================
 
-Contents and hallo worls:
+Contents:
 
 .. toctree::
    :maxdepth: 2
