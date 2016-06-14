@@ -169,7 +169,7 @@ class Acano:
 			>>> 'offset' : 5
 			>>> }))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
 
 		"""
 		return self.__open__("coSpaces")
@@ -189,7 +189,7 @@ class Acano:
 			>>>	'name' : 'Emergency meeting'
 			>>>	}))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
 
 		"""
 		return self.__open__("coSpaces", payload = payload, HTTPmethod='POST')
@@ -208,7 +208,7 @@ class Acano:
 			>>>	"name" : "Modified coSpace"
 			>>>	}))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
 
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), payload = payload, HTTPmethod = 'PUT')
@@ -225,7 +225,7 @@ class Acano:
 		:Example:
 			>>> print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=27
 
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), parameters = parameters)
@@ -242,7 +242,7 @@ class Acano:
 		:Example:
 			>>> print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. note:: This function is not explicitly described in the Acano API reference
 
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), HTTPmethod = "delete".upper())
@@ -264,7 +264,7 @@ class Acano:
 		:Example:
 		>>> print(a.get_coSpace_members("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=27
 
 		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_node_(coSpace_id, parameters = parameters, HTTPmethod = 'GET')
@@ -297,6 +297,25 @@ class Acano:
 		return self.__open__(("coSpaces/" + coSpace_id + "/coSpaceUsers/" + coSpace_user_id), parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_coSpace_member(self, coSpace_id, coSpace_user_id, payload = {}):
+		"""Make changes to the permissions of a user in a coSpace, using the coSpace ID as the identifier.
+
+		:param coSpace_id: The ID of the coSpace for to get the user. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+		:type coSpace_id: String
+
+		:param coSpace_user_id: The ID of the user. 
+		:type coSpace_user_id: String
+
+		:param payload: Details the state to which to update the user. 
+		:type payload: Dict
+		
+		:Example:
+			>>> print(a.modify_coSpace_member("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", user_id, payload {
+			>>> 'canDestroy' : 'true'
+			>>> }))
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+
+		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_(coSpace_id, coSpace_user_id, payload, HTTPmethod = 'PUT')
 
 	def get_coSpace_member(self, coSpace_id, coSpace_user_id):
