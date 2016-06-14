@@ -4,6 +4,31 @@ from xml.dom import minidom
 import os, pprint as pp
 import xml.parsers.expat
 
+
+	"""The Acano Server class
+
+	Use this class to connect and make API calls to an Acano Virtual Machine.
+
+	:param server_ip: The IP Address of the server
+	:param username: The username of an account with access to the API.
+	:param password: The password for your user account
+
+	:type server_ip: String
+	:type username: String
+	:type password: String
+
+	:return: return an Acano object
+	:rtype: class Acano
+
+	:Example:
+	::
+
+		import AcanoPy 
+		a = AcanoPy.Acano("192.168.12.100", "admin", "guest")
+	
+
+	"""
+
 class AResponse:
 	def __init__(self, HTTPResponse):
 		self.r = HTTPResponse
@@ -28,29 +53,7 @@ class AResponse:
 			return ET.Element
 
 class Acano:
-	"""The Acano Server class
 
-	Use this class to connect and make API calls to an Acano Virtual Machine.
-
-	:param server_ip: The IP Address of the server
-	:param username: The username of an account with access to the API.
-	:param password: The password for your user account
-
-	:type server_ip: String
-	:type username: String
-	:type password: String
-
-	:return: return an Acano object
-	:rtype: class Acano
-
-	:Example:
-	::
-
-		import AcanoPy 
-		a = AcanoPy.Acano("192.168.12.100", "admin", "guest")
-	
-
-	"""
 	def __init__(self, server_ip, username, password):
 		self.server_ip = server_ip
 		self.username = username
