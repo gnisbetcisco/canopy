@@ -1,10 +1,26 @@
-import AcanoPy
+import Canopy
 import pprint as pp
+import unittest
 
-a = AcanoPy.Acano("192.168.12.200", "admin", "admin")
-print(a.get_coSpaces())
+a = Canopy.Acano("192.168.12.201", "admin", "admin")
 
-print(a.get_user_profiles())
+class TestAcano(unittest.TestCase):
+	def setUp(self):
+		coSpaces = a.get_coSpaces()
+		print()
+		if(coSpaces["coSpaces"]["@total"] != "0"):
+			coSpaces = coSpaces["coSpaces"]["coSpace"]
+			for cs in coSpaces:
+				a.delete_coSpace(cs["@id"])
+
+	def test_no_coSpaces(self):
+		self.assertEqual(a.get_coSpaces()["coSpaces"]["@total"], "0")
+
+
+if __name__ == '__main__':
+	unittest.main()
+	input()
+
 
 #print(a.add_ldap_server())
 

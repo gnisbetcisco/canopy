@@ -170,6 +170,7 @@ class Acano:
 			>>> }))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
+		.. note:: v1.8 upward
 
 		"""
 		return self.__open__("coSpaces")
@@ -190,6 +191,7 @@ class Acano:
 			>>>	}))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
+		.. note:: v1.8 upward
 
 		"""
 		return self.__open__("coSpaces", payload = payload, HTTPmethod='POST')
@@ -209,7 +211,7 @@ class Acano:
 			>>>	}))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
-
+		.. note:: v1.8 upward
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), payload = payload, HTTPmethod = 'PUT')
 
@@ -226,7 +228,7 @@ class Acano:
 			>>> print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=27
-
+		.. note:: v1.8 upward
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), parameters = parameters)
 
@@ -243,7 +245,7 @@ class Acano:
 			>>> print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
 		.. note:: This function is not explicitly described in the Acano API reference
-
+		.. note:: v1.8 upward
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), HTTPmethod = "delete".upper())
 
@@ -265,7 +267,7 @@ class Acano:
 		>>> print(a.get_coSpace_members("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=27
-
+		.. note:: v1.8 upward
 		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_node_(coSpace_id, parameters = parameters, HTTPmethod = 'GET')
 
@@ -284,7 +286,7 @@ class Acano:
 			>>> }))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
-
+		.. note:: v1.8 upward
 		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_node_(coSpace_id, payload = payload, HTTPmethod = 'POST')
 
@@ -314,7 +316,7 @@ class Acano:
 			>>> }))
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
-
+		.. note:: v1.8 upward
 		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_(coSpace_id, coSpace_user_id, payload, HTTPmethod = 'PUT')
 
