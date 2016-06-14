@@ -1,0 +1,1458 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Canopy &mdash; Canopy 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Canopy 0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Canopy 0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Canopy</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">ssl</span><span class="o">,</span> <span class="nn">urllib.parse</span><span class="o">,</span> <span class="nn">base64</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">xmltodict</span><span class="o">,</span> <span class="nn">urllib</span><span class="o">,</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">ET</span>
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pprint</span> <span class="kn">as</span> <span class="nn">pp</span>
+<span class="kn">import</span> <span class="nn">xml.parsers.expat</span>
+
+<span class="k">class</span> <span class="nc">AResponse</span><span class="p">:</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HTTPResponse</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">HTTPResponse</span>
+		<span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">HTTPResponse</span><span class="o">.</span><span class="n">msg</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">HTTPResponse</span><span class="o">.</span><span class="n">status</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="n">HTTPResponse</span><span class="o">.</span><span class="n">reason</span>
+
+	<span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">getheader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">getheader</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">getheaders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">getheaders</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">get_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+		<span class="k">except</span> <span class="n">xml</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">expat</span><span class="o">.</span><span class="n">ExpatError</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span>
+
+<div class="viewcode-block" id="Acano"><a class="viewcode-back" href="../index.html#Canopy.Acano">[docs]</a><span class="k">class</span> <span class="nc">Acano</span><span class="p">:</span>
+	<span class="sd">&quot;&quot;&quot;The Acano Server class</span>
+
+<span class="sd">	Use this class to connect and make API calls to an Acano Virtual Machine.</span>
+
+<span class="sd">	:param server_ip: The IP Address of the server</span>
+<span class="sd">	:param username: The username of an account with access to the API.</span>
+<span class="sd">	:param password: The password for your user account</span>
+
+<span class="sd">	:type server_ip: String</span>
+<span class="sd">	:type username: String</span>
+<span class="sd">	:type password: String</span>
+
+<span class="sd">	:return: return an Acano object</span>
+<span class="sd">	:rtype: class Acano</span>
+
+<span class="sd">	:Example:</span>
+
+<span class="sd">	import AcanoPy </span>
+<span class="sd">	a = AcanoPy.Acano(&quot;192.168.12.10&quot;, &quot;admin&quot;, &quot;guest&quot;)</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_ip</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">server_ip</span> <span class="o">=</span> <span class="n">server_ip</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">username</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">password</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+	<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">	def get_response(self, function):</span>
+<span class="sd">		return function(parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	
+	<span class="k">def</span> <span class="nf">__open__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acanoMethod</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_ip</span>
+		<span class="n">base</span> <span class="o">=</span> <span class="s2">&quot;https://&quot;</span> <span class="o">+</span> <span class="n">ip</span> <span class="o">+</span> <span class="s2">&quot;/api/v1/&quot;</span> <span class="o">+</span> <span class="n">acanoMethod</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span> <span class="o">+</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+		<span class="n">req</span> <span class="o">=</span> <span class="mi">1</span> 
+		<span class="k">if</span><span class="p">(</span><span class="n">payload</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+			<span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+			<span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">HTTPmethod</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">d</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+			<span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+			<span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+			<span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">HTTPmethod</span>
+		
+		<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">&quot;Authorization&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
+
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">()</span>
+		<span class="n">ctx</span><span class="o">.</span><span class="n">check_hostname</span> <span class="o">=</span> <span class="bp">False</span>
+		<span class="n">ctx</span><span class="o">.</span><span class="n">verify_mode</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_NONE</span>
+
+		<span class="n">resp</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+		<span class="k">with</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">resp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+			<span class="c1">#return resp.decode(&quot;utf-8&quot;) #ET.fromstring(xmltodict.ConvertXmlToDict()</span>
+			<span class="n">tR</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+
+
+			<span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">response</span> <span class="o">=</span> <span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span> <span class="c1">#json.loads(json.dumps(xml... in order to convert from OrderedDict to dict</span>
+			<span class="k">except</span> <span class="n">xml</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">expat</span><span class="o">.</span><span class="n">ExpatError</span><span class="p">:</span>
+				<span class="n">testString</span> <span class="o">=</span> <span class="s2">&quot;&lt;class &#39;http.client.HTTPResponse&#39;&gt;&quot;</span>
+				<span class="k">if</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="o">==</span> <span class="n">testString</span><span class="p">):</span>
+					<span class="k">return</span> <span class="p">{</span><span class="s1">&#39;HTTPResponse&#39;</span> <span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">getcode</span><span class="p">()}</span>
+
+			<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">				This section attempts to convert the responses that contain only a single item, eg:</span>
+
+<span class="sd">				{&#39;coSpaces&#39;: 	{ &#39;@total&#39;: &#39;1&#39;,</span>
+<span class="sd">              					&#39;coSpace&#39;: {&#39;@id&#39;: &#39;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#39;,</span>
+<span class="sd">                          		&#39;autoGenerated&#39;: &#39;false&#39;,</span>
+<span class="sd">                          		&#39;name&#39;: None}}}​</span>
+
+<span class="sd">                {&#39;coSpaces&#39;: 	{&#39;@total&#39;: &#39;1&#39;,</span>
+<span class="sd">              					&#39;coSpace&#39;: [</span>
+<span class="sd">              					{&#39;@id&#39;: &#39;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&#39;,</span>
+<span class="sd">                           		&#39;autoGenerated&#39;: &#39;false&#39;,</span>
+<span class="sd">                           		&#39;name&#39;: None}</span>
+<span class="sd">                           		]}}​</span>
+
+<span class="sd">                This mitigates different behaviour from when there are single instances vs multiple instances:</span>
+
+<span class="sd">                Before:</span>
+
+<span class="sd">                a.get_coSpaces()[&quot;coSpace&quot;][&quot;coSpace&quot;][&quot;@id&quot;] # Get the first coSpace ID when there&#39;s only one coSpace in the database</span>
+<span class="sd">                a.get_coSpaces()[&quot;coSpace&quot;][&quot;coSpace&quot;][0][&quot;@id&quot;] # Get the first coSpace ID when there are multiple coSpaces in the database</span>
+
+<span class="sd">                After:</span>
+
+<span class="sd">                a.get_coSpaces()[&quot;coSpace&quot;][&quot;coSpace&quot;][0][&quot;@id&quot;] # Get the first coSpace ID when there&#39;s only one coSpace in the database</span>
+<span class="sd">				a.get_coSpaces()[&quot;coSpace&quot;][&quot;coSpace&quot;][0][&quot;@id&quot;] # Get the first coSpace ID when there are multiple coSpaces in the database</span>
+
+<span class="sd">			&#39;&#39;&#39;</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">rootName</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+				<span class="n">root</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">rootName</span><span class="p">]</span>
+
+				<span class="k">if</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="s2">&quot;@total&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">):</span> <span class="c1"># Attempt to find a &#39;total&#39; of items </span>
+
+					<span class="n">li</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+					<span class="n">childName</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">1</span><span class="p">]</span>
+
+					<span class="n">li</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="n">childName</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+					<span class="n">root</span><span class="p">[</span><span class="n">childName</span><span class="p">]</span> <span class="o">=</span> <span class="n">li</span>
+					<span class="n">response</span><span class="p">[</span><span class="n">rootName</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span>
+
+
+
+					<span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+				<span class="k">elif</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+					<span class="k">return</span> <span class="p">{}</span>
+
+					<span class="c1">#pp.pprint(root)</span>
+					<span class="c1">#We need to make it a list</span>
+			<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))))</span>
+
+
+
+			<span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))))</span>
+	
+
+<div class="viewcode-block" id="Acano.get_coSpaces"><a class="viewcode-back" href="../index.html#Canopy.Acano.get_coSpaces">[docs]</a>	<span class="k">def</span> <span class="nf">get_coSpaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="sd">&quot;&quot;&quot;Get the coSpaces within the Acano VM. These are returned in an arbitrary order.</span>
+
+<span class="sd">		:param parameters: A dictionary of parameters, per the Acano API.</span>
+<span class="sd">		:type parameters: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.get_coSpaces())</span>
+
+<span class="sd">		:Example:</span>
+
+<span class="sd">		print(a.get_coSpaces(parameters = {</span>
+<span class="sd">			&#39;offset&#39; : 5</span>
+<span class="sd">			}))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;coSpaces&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Acano.create_coSpace"><a class="viewcode-back" href="../index.html#Canopy.Acano.create_coSpace">[docs]</a>	<span class="k">def</span> <span class="nf">create_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="sd">&quot;&quot;&quot;Create a new coSpace</span>
+
+<span class="sd">		:param payload: Details the initial state of the newly created coSpace</span>
+<span class="sd">		:type payload: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.create_coSpace())</span>
+
+<span class="sd">		:Example:</span>
+
+<span class="sd">		print(a.create_coSpace(payload = {</span>
+<span class="sd">			&#39;name&#39; : &#39;Emergency meeting&#39;</span>
+<span class="sd">			}))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;coSpaces&quot;</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span><span class="o">=</span><span class="s1">&#39;POST&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Acano.modify_coSpace"><a class="viewcode-back" href="../index.html#Canopy.Acano.modify_coSpace">[docs]</a>	<span class="k">def</span> <span class="nf">modify_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Make changes to an existing coSpace, using the coSpace ID as the identifier.</span>
+
+<span class="sd">		:param coSpace_id: The ID of the coSpace to modify. This can be returned from the get_coSpaces()[&quot;coSpaces&quot;][&quot;coSpace&quot;][i][&quot;@id&quot;]</span>
+<span class="sd">		:type coSpace_id: String</span>
+
+<span class="sd">		:param payload: Details the new state of the identified coSpace</span>
+<span class="sd">		:type payload: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.modify_coSpace(&quot;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&quot;, payload = {</span>
+<span class="sd">			&quot;name&quot; : &quot;Modified coSpace&quot;</span>
+<span class="sd">			}))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">((</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span><span class="p">),</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Acano.get_coSpace"><a class="viewcode-back" href="../index.html#Canopy.Acano.get_coSpace">[docs]</a>	<span class="k">def</span> <span class="nf">get_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="sd">&quot;&quot;&quot;Get the details of a coSpace, using the coSpace ID as the identifier.</span>
+
+<span class="sd">		:param coSpace_id: The ID of the coSpace to modify. This can be returned from the get_coSpaces()[&quot;coSpaces&quot;][&quot;coSpace&quot;][i][&quot;@id&quot;]</span>
+<span class="sd">		:type coSpace_id: String</span>
+
+<span class="sd">		:param payload: Details the new state of the identified coSpace</span>
+<span class="sd">		:type payload: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.get_coSpace(&quot;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&quot;))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">((</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span><span class="p">),</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Acano.delete_coSpace"><a class="viewcode-back" href="../index.html#Canopy.Acano.delete_coSpace">[docs]</a>	<span class="k">def</span> <span class="nf">delete_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Delete a coSpace, using the coSpace ID as the identifier.</span>
+
+<span class="sd">		:param coSpace_id: The ID of the coSpace to delete. This can be returned from the get_coSpaces()[&quot;coSpaces&quot;][&quot;coSpace&quot;][i][&quot;@id&quot;]</span>
+<span class="sd">		:type coSpace_id: String</span>
+
+<span class="sd">		:param payload: Details the new state of the identified coSpace</span>
+<span class="sd">		:type payload: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.delete_coSpace(&quot;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&quot;))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">((</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span><span class="p">),</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span></div>
+
+
+
+	<span class="k">def</span> <span class="nf">_coSpaces_coSpaceID_coSpaceUsers_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">((</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span> <span class="o">+</span> <span class="s2">&quot;/coSpaceUsers&quot;</span><span class="p">),</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Acano.get_coSpace_members"><a class="viewcode-back" href="../index.html#Canopy.Acano.get_coSpace_members">[docs]</a>	<span class="k">def</span> <span class="nf">get_coSpace_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="sd">&quot;&quot;&quot;Get the members in a coSpace, using the coSpace ID as the identifier.</span>
+
+<span class="sd">		:param coSpace_id: The ID of the coSpace for which to get members. This can be returned from the get_coSpaces()[&quot;coSpaces&quot;][&quot;coSpace&quot;][i][&quot;@id&quot;]</span>
+<span class="sd">		:type coSpace_id: String</span>
+
+<span class="sd">		:param parameters: Details the parameters of the HTTP GET</span>
+<span class="sd">		:type parameters: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.get_coSpace_members(&quot;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&quot;))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_coSpaceUsers_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Acano.add_member_to_coSpace"><a class="viewcode-back" href="../index.html#Canopy.Acano.add_member_to_coSpace">[docs]</a>	<span class="k">def</span> <span class="nf">add_member_to_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="sd">&quot;&quot;&quot;Add a member to the coSpace, using the coSpace ID as the identifier.</span>
+
+<span class="sd">		:param coSpace_id: The ID of the coSpace for which to add a member. This can be returned from the get_coSpaces()[&quot;coSpaces&quot;][&quot;coSpace&quot;][i][&quot;@id&quot;]</span>
+<span class="sd">		:type coSpace_id: String</span>
+
+<span class="sd">		:param payload: Details the member to add. Must contain the User JID.</span>
+<span class="sd">		:type payload: Dict</span>
+<span class="sd">		</span>
+<span class="sd">		:Example:</span>
+<span class="sd">		print(a.add_member_to_coSpace(&quot;3b8dfa05-f7b6-41f2-b14a-739a0d015b90&quot;, payload {</span>
+<span class="sd">			&#39;userJid&#39; : a.get_coSpace_members()[&quot;coSpaceMembers]</span>
+<span class="sd">			}))</span>
+
+<span class="sd">		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_coSpaceUsers_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span></div>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">coSpace_user_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">((</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span> <span class="o">+</span> <span class="s2">&quot;/coSpaceUsers/&quot;</span> <span class="o">+</span> <span class="n">coSpace_user_id</span><span class="p">),</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_coSpace_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">coSpace_user_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">coSpace_user_id</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_coSpace_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">coSpace_user_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">coSpace_user_id</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+		
+
+
+
+	<span class="k">def</span> <span class="nf">_coSpaces_coSpaceID_messages_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">((</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span> <span class="o">+</span> <span class="s2">&quot;/messages&quot;</span><span class="p">),</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">post_message_to_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_messages_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">delete_message_from_coSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_messages_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_userProfiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;userProfiles&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userProfiles_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_user_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userProfiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_userProfiles_userProfile_id_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;userProfiles/&quot;</span> <span class="o">+</span> <span class="n">user_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_user_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userProfiles_userProfile_id_node_</span><span class="p">(</span><span class="n">user_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_user_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userProfiles_userProfile_id_node_</span><span class="p">(</span><span class="n">user_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">get_system_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/status&quot;</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_system_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/alarms&quot;</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_system_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/database&quot;</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_system_cdrReceivers_cdrReceiverId_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdr_receiver_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/cdrReceivers/&quot;</span> <span class="o">+</span> <span class="n">cdr_receiver_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_cdr_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdr_receiver_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_cdrReceivers_cdrReceiverId_node_</span><span class="p">(</span><span class="n">cdr_receiver_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">modify_cdr_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdr_receiver_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_cdrReceivers_cdrReceiverId_node_</span><span class="p">(</span><span class="n">cdr_receiver_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_system_cdrReceivers_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/cdrReceivers&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_cdr_receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_cdrReceivers_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_cdr_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_cdrReceivers_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+
+	
+	<span class="k">def</span> <span class="nf">_system_profiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/profiles&quot;</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_global_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_profiles_node_</span><span class="p">(</span><span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_global_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_profiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_global_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_profiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_turnServers_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;turnServers&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_turn_servers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_turnServers_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_turn_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_turnServers_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">__turnServers_turnServerId_node__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_server_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;turnServers/&quot;</span> <span class="o">+</span> <span class="n">turn_server_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_turn_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_server_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__turnServers_turnServerId_node__</span><span class="p">(</span><span class="n">turn_server_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_turn_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_server_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__turnServers_turnServerId_node__</span><span class="p">(</span><span class="n">turn_server_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="c1">#This one returns bad request when presented with a valid TURN server ID. Not sure why...</span>
+	<span class="k">def</span> <span class="nf">get_turn_server_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_server_id</span><span class="p">):</span>
+		<span class="k">print</span><span class="p">(</span><span class="s2">&quot;turnServers/&quot;</span> <span class="o">+</span> <span class="n">turn_server_id</span> <span class="o">+</span> <span class="s2">&quot;/status&quot;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;turnServers/&quot;</span> <span class="o">+</span> <span class="n">turn_server_id</span> <span class="o">+</span> <span class="s2">&quot;/status&quot;</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_webBridges_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;webBridges&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_web_bridges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_webBridges_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_web_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_webBridges_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_webBridges_webBridgeID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;webBridges/&quot;</span> <span class="o">+</span> <span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_web_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_webBridges_webBridgeID_node_</span><span class="p">(</span><span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_web_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_webBridges_webBridgeID_node_</span><span class="p">(</span><span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">update_web_bridge_customization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">web_bridge_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;webBridges/&quot;</span> <span class="o">+</span> <span class="n">web_bridge_id</span> <span class="o">+</span> <span class="s2">&quot;/updateCustomization&quot;</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">POST</span><span class="p">)</span>
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callBridges_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callBridges&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_bridges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBridges_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_call_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBridges_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callBridges_callBridgeID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callBridges/&quot;</span> <span class="o">+</span> <span class="n">call_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_call_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_bridge_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBridges_callBridgeID_node_</span><span class="p">(</span><span class="n">call_bridge_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBridges_callBridgeID_node_</span><span class="p">(</span><span class="n">call_bridge_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_system_configuration_xmpp_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/configuration/xmpp&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_xmpp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_configuration_xmpp_node_</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">create_xmpp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_configuration_xmpp_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_xmpp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_configuration_xmpp_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_system_configuration_cluster_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/configuration/cluster&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_bridge_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_configuration_cluster_node_</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">create_bridge_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_configuration_cluster_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_bridge_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_configuration_cluster_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">get_system_diagnostics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/diagnostics&quot;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_system_diagnostic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diagnostic_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/diagnostics/&quot;</span> <span class="o">+</span> <span class="n">diagnostic_id</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_system_diagnostic_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diagnostic_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;system/diagnostics/&quot;</span> <span class="o">+</span> <span class="n">diagnostic_id</span> <span class="o">+</span> <span class="s2">&quot;/contents&quot;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapServers_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapServers&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">get_ldap_servers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapServers_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_ldap_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapServers_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapServers_ldapServerID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_server_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapServers/&quot;</span> <span class="o">+</span> <span class="n">ldap_server_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_ldap_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_server_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapServers_ldapServerID_node_</span><span class="p">(</span><span class="n">ldap_server_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_server_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapServers_ldapServerID_node_</span><span class="p">(</span><span class="n">ldap_server_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapMappings_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapMappings&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapMappings_node_</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">create_ldap_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapMappings_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapMappings_ldapMappingID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_mapping_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapMappings/&quot;</span> <span class="o">+</span> <span class="n">ldap_mapping_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_ldap_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_mapping_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapMappings_ldapMappingID_node_</span><span class="p">(</span><span class="n">ldap_mapping_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_mapping_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapMappings_ldapMappingID_node_</span><span class="p">(</span><span class="n">ldap_mapping_id</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapSources_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapSources&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSources_node_</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">create_ldap_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSources_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapSources_ldapSourceID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_source_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapSources/&quot;</span> <span class="o">+</span> <span class="n">ldap_source_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_ldap_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_source_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSources_ldapSourceID_node_</span><span class="p">(</span><span class="n">ldap_source_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_source_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSources_ldapSourceID_node_</span><span class="p">(</span><span class="n">ldap_source_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapSyncs_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapSyncs&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_syncs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSyncs_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">initiate_ldap_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSyncs_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_ldapSyncs_ldapSyncID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_sync_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ldapSyncs/&quot;</span> <span class="o">+</span> <span class="n">ldap_sync_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">cancel_ldap_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_sync_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSyncs_ldapSyncID_node_</span><span class="p">(</span><span class="n">ldap_sync_id</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;delete&#39;</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+	<span class="k">def</span> <span class="nf">get_ldap_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap_sync_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ldapSyncs_ldapSyncID_node_</span><span class="p">(</span><span class="n">ldap_sync_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_directorySearchLocations_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;directorySearchLocations&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_directory_search_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directorySearchLocations_node_</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">create_directory_search_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directorySearchLocations_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+	
+
+
+	<span class="k">def</span> <span class="nf">_directorySearchLocations_directorySearchLocationID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory_search_location_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;directorySearchLocations/&quot;</span> <span class="o">+</span> <span class="n">directory_search_location_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_directory_search_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory_search_location_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directorySearchLocations_directorySearchLocationID_node_</span><span class="p">(</span><span class="n">directory_search_location_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_directory_search_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory_search_location_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directorySearchLocations_directorySearchLocationID_node_</span><span class="p">(</span><span class="n">directory_search_location_id</span><span class="p">)</span>
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_tenants_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;tenants&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_tenants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenants_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_tenant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenants_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">_tenants_tenantID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;tenants/&quot;</span> <span class="o">+</span> <span class="n">tenant_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_tenant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenants_tenantID_node_</span><span class="p">(</span><span class="n">tenant_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_tenant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenants_tenantID_node_</span><span class="p">(</span><span class="n">tenant_id</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_tenantGroups_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;tenantGroups&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_tenant_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenantGroups_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{})</span>
+
+	<span class="k">def</span> <span class="nf">create_tenant_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenantGroups_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">_tenantGroups_tenantGroupID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_group_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;tenantGroups/&quot;</span> <span class="o">+</span> <span class="n">tenant_group_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_tenant_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_group_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenantGroups_tenantGroupID_node_</span><span class="p">(</span><span class="n">tenant_group_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_tenant_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_group_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tenantGroups_tenantGroupID_node_</span><span class="p">(</span><span class="n">tenant_group_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">create_access_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_coSpaces_coSpaceID_accessMethods_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span> <span class="o">+</span> <span class="s2">&quot;/accessMethods&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_coSpace_access_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_accessMethods_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_coSpace_access_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_accessMethods_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_coSpaces_coSpaceID_accessmethods_accessMethodID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">access_method_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span> <span class="o">+</span> <span class="s2">&quot;/accessMethods/&quot;</span> <span class="o">+</span> <span class="n">access_method_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_coSpace_access_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">access_method_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_accessmethods_accessMethodID_node_</span><span class="p">(</span><span class="n">coSpace_id</span><span class="p">,</span> <span class="n">access_method_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_coSpace_access_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">access_method_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coSpaces_coSpaceID_accessmethods_accessMethodID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">,</span> <span class="n">access_method_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+
+
+	<span class="c1">#Generates bad request. Not sure why...</span>
+	<span class="k">def</span> <span class="nf">_create_coSpace_diagnostics_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coSpace_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;coSpaces/&quot;</span> <span class="o">+</span> <span class="n">coSpace_id</span> <span class="o">+</span> <span class="s2">&quot;/diagnostics&quot;</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_outboundDialPlanRules_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;outboundDialPlanRules&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_outbound_dial_plan_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outboundDialPlanRules_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_outbound_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outboundDialPlanRules_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">_outboundDialPlanRules_outboundDialPlanRuleID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;outboundDialPlanRules/&quot;</span> <span class="o">+</span> <span class="n">outbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_outbound_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outboundDialPlanRules_outboundDialPlanRuleID_node_</span><span class="p">(</span><span class="n">outbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_outbound_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outboundDialPlanRules_outboundDialPlanRuleID_node_</span><span class="p">(</span><span class="n">outbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_inboundDialPlanRules_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;inboundDialPlanRules&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_inbound_dial_plan_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inboundDialPlanRules_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_inbound_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inboundDialPlanRules_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">_inboundDialPlanRules_inboundDialPlanRuleID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;inboundDialPlanRules/&quot;</span> <span class="o">+</span> <span class="n">inbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_inbound_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inboundDialPlanRules_inboundDialPlanRuleID_node_</span><span class="p">(</span><span class="n">inbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_inbound_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inboundDialPlanRules_inboundDialPlanRuleID_node_</span><span class="p">(</span><span class="n">inbound_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_forwardingDialPlanRules_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;forwardingDialPlanRules&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_forwarding_dial_plan_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forwardingDialPlanRules_node_</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_forwarding_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forwardingDialPlanRules_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_forwardingDialPlanRules_forwardingDialPlanRuleID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forwarding_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;forwardingDialPlanRules/&quot;</span> <span class="o">+</span> <span class="n">forwarding_dial_plan_rule_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_forwarding_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forwarding_dial_plan_rule_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forwardingDialPlanRules_forwardingDialPlanRuleID_node_</span><span class="p">(</span><span class="n">forwarding_dial_plan_rule_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_forwarding_dial_plan_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forwarding_dial_plan_rule_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forwardingDialPlanRules_forwardingDialPlanRuleID_node_</span><span class="p">(</span><span class="n">forwarding_dial_plan_rule_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_calls_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;calls&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls_node</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls_node</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_calls_callID_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;calls/&quot;</span> <span class="o">+</span> <span class="n">call_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls_callID_node</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">delete_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls_callID_node</span><span class="p">(</span><span class="n">call_id</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callProfiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callProfiles&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callProfiles_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_call_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callProfiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callProfiles_callProfileID_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callProfiles/&quot;</span> <span class="o">+</span> <span class="n">call_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_call_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callProfiles_callProfileID_node</span><span class="p">(</span><span class="n">call_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_profile_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callProfiles_callProfileID_node</span><span class="p">(</span><span class="n">call_profile_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callLegs_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callLegs&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_legs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegs_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">create_call_leg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;calls/&quot;</span> <span class="o">+</span> <span class="n">call_id</span> <span class="o">+</span> <span class="s2">&quot;/callLegs&quot;</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callLegs_callLegID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callLegs/&quot;</span> <span class="o">+</span> <span class="n">call_leg_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_call_leg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegs_callLegID_node_</span><span class="p">(</span><span class="n">call_leg_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_leg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegs_callLegID_node_</span><span class="p">(</span><span class="n">call_leg_id</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_callLegProfiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callLegProfiles&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_leg_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegProfiles_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_call_leg_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegProfiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_callLegProfiles_callLegProfileID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callLegProfiles/&quot;</span> <span class="o">+</span> <span class="n">call_leg_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_call_leg_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegProfiles_callLegProfileID_node_</span><span class="p">(</span><span class="n">call_leg_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_leg_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_profile_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callLegProfiles_callLegProfileID_node_</span><span class="p">(</span><span class="n">call_leg_profile_id</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">get_call_leg_profile_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_leg_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callLegs/&quot;</span> <span class="o">+</span> <span class="n">call_leg_profile_id</span> <span class="o">+</span> <span class="s2">&quot;/callLegProfileTrace&quot;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_dialTransforms_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;dialTransforms&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_dial_transforms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialTransforms_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_dial_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialTransforms_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_dialTransforms_dialTransformID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dial_transform_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;dialTransforms/&quot;</span> <span class="o">+</span> <span class="n">dial_transform_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_dial_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dial_transform_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialTransforms_dialTransformID_node_</span><span class="p">(</span><span class="n">dial_transform_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_dial_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dial_transform_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialTransforms_dialTransformID_node_</span><span class="p">(</span><span class="n">dial_transform_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callBrandingProfiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callBrandingProfiles&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_branding_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBrandingProfiles_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_call_branding_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBrandingProfiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_callBrandingProfiles_callBrandingProfileID_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_branding_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;callBrandingProfiles/&quot;</span> <span class="o">+</span> <span class="n">call_branding_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_call_branding_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_branding_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBrandingProfiles_callBrandingProfileID_node</span><span class="p">(</span><span class="n">call_branding_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_call_branding_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_branding_profile_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callBrandingProfiles_callBrandingProfileID_node</span><span class="p">(</span><span class="n">call_branding_profile_id</span><span class="p">)</span>
+
+
+
+
+
+	<span class="k">def</span> <span class="nf">_dtmfProfiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;dtmfProfiles&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_dtmf_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtmfProfiles_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_dtmf_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtmfProfiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_dtmfProfiles_dtmfProfileID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtmf_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;dtmfProfiles/&quot;</span> <span class="o">+</span> <span class="n">dtmf_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_dtmf_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtmf_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtmfProfiles_dtmfProfileID_node_</span><span class="p">(</span><span class="s2">&quot;dtmfProfiles/&quot;</span> <span class="o">+</span> <span class="n">dtmf_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_dtmf_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtmf_profile_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtmfProfiles_dtmfProfileID_node_</span><span class="p">(</span><span class="n">dtmf_profile_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ivrs_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ivrs&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ivrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrs_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">create_ivr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrs_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_ivrs_ivrID_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ivr_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ivrs/&quot;</span> <span class="o">+</span> <span class="n">ivr_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_ivr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ivr_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrs_ivrID_node</span><span class="p">(</span><span class="n">ivr_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ivr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ivr_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrs_ivrID_node</span><span class="p">(</span><span class="n">ivr_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ivrBrandingProfiles_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ivrBrandingProfiles&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ivr_branding_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrBrandingProfiles_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{})</span>
+
+	<span class="k">def</span> <span class="nf">create_ivr_branding_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrBrandingProfiles_node_</span><span class="p">(</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_ivrBrandingProfiles_ivrBrandingProfileID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ivr_branding_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;ivrBrandingProfiles/&quot;</span> <span class="o">+</span> <span class="n">ivr_branding_profile_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">modify_ivr_branding_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ivr_branding_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrBrandingProfiles_ivrBrandingProfileID_node_</span><span class="p">(</span><span class="n">ivr_branding_profile_id</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;PUT&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_ivr_branding_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ivr_branding_profile_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ivrBrandingProfiles_ivrBrandingProfileID_node_</span><span class="p">(</span><span class="n">ivr_branding_profile_id</span><span class="p">)</span>
+
+
+
+
+	<span class="k">def</span> <span class="nf">_participants_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;participants&quot;</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_participants_node_</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">)</span>
+
+
+
+	<span class="k">def</span> <span class="nf">_participants_participantID_node_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">participant_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">payload</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__open__</span><span class="p">(</span><span class="s2">&quot;participants/&quot;</span> <span class="o">+</span> <span class="n">participant_id</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">HTTPmethod</span> <span class="o">=</span> <span class="n">HTTPmethod</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_participant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">participant_id</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_participants_participantID_node_</span><span class="p">(</span><span class="n">participant_id</span><span class="p">)</span></div>
+
+
+
+
+<span class="c1"># print(len(Acano.__dict__))</span>
+
+
+
+<span class="c1"># ivrbpid = a.get_ivr_branding_profiles()[&quot;ivrBrandingProfiles&quot;][&quot;ivrBrandingProfile&quot;][0][&quot;@id&quot;]</span>
+
+<span class="c1"># print(a.modify_ivr_branding_profile(ivrbpid, payload = {</span>
+<span class="c1"># 	&#39;resourceLocation&#39; : &quot;http://george.com&quot;</span>
+<span class="c1"># 	}))</span>
+
+<span class="c1"># pp.pprint(a.get_ivr_branding_profile(ivrbpid))</span>
+
+
+<span class="c1"># ivrid = a.get_ivrs()[&quot;ivrs&quot;][&quot;ivr&quot;][&quot;@id&quot;]</span>
+<span class="c1"># print(a.modify_ivr(ivrid, payload = {</span>
+<span class="c1"># 	&#39;uri&#39; : &#39;http://george.com&#39;</span>
+<span class="c1"># 	}))</span>
+
+<span class="c1"># pp.pprint(a.get_ivr(ivrid))</span>
+
+
+
+
+<span class="c1"># var = a.get_call_branding_profiles()[&quot;callBrandingProfiles&quot;][&quot;callBrandingProfile&quot;][0][&quot;@id&quot;]</span>
+
+<span class="c1"># print(a.modify_call_branding_profile(var, payload = {</span>
+<span class="c1"># 	&#39;invitationTemplate&#39; : &quot;http://example.co&quot;</span>
+<span class="c1"># 	}))</span>
+<span class="c1"># print(a.get_call_branding_profile(var))</span>
+
+
+
+<span class="c1"># dtid = a.get_dial_transforms()[&quot;dialTransforms&quot;][&quot;dialTransform&quot;][&quot;@id&quot;]</span>
+
+
+<span class="c1"># print(a.modify_dial_transform(dtid, payload = {</span>
+<span class="c1"># 	&#39;action&#39; : &#39;deny&#39;,</span>
+<span class="c1"># 	&#39;priority&#39; : 50,</span>
+<span class="c1"># 	&#39;type&#39; : &#39;strip&#39;</span>
+<span class="c1"># 	}))</span>
+
+<span class="c1"># pp.pprint(a.get_dial_transform(dtid))</span>
+
+
+
+<span class="c1"># #csid = a.get_coSpaces()[&quot;coSpaces&quot;][&quot;coSpace&quot;][0][&quot;@id&quot;]</span>
+
+<span class="c1"># #clid = a.get_call_legs()[&quot;callLegs&quot;][&quot;callLeg&quot;][&quot;@id&quot;]</span>
+<span class="c1"># #print(clid)</span>
+
+<span class="c1"># #cid = a.get_calls()[&quot;calls&quot;][&quot;call&quot;][&quot;@id&quot;]</span>
+
+<span class="c1"># #clpid = a.get_call_leg_profiles()[&quot;callLegProfiles&quot;][&quot;callLegProfile&quot;][&quot;@id&quot;]</span>
+
+<span class="c1"># #pp.pprint(a.get_call_leg_profile_trace(clid))</span>
+
+
+
+
+<span class="c1"># cdr_id = a.get_cdr_receivers()[&#39;cdrReceivers&#39;][&#39;cdrReceiver&#39;][&#39;@id&#39;]</span>
+
+<span class="c1"># print(cdr_id)</span>
+
+
+<span class="c1"># print(a.get_cdr_receiver(cdr_id))</span>
+<span class="c1"># print(a.get_cdr_receivers())</span>
+
+
+<span class="c1"># #coSpaceID = var[&#39;coSpaces&#39;][&#39;coSpace&#39;][1][&#39;@id&#39;]</span>
+
+<span class="c1"># #print(a.get_coSpace_member(coSpaceID, &quot;123&quot;))</span>
+
+
+<span class="c1"># print(a.get_user_profiles())</span>
+
+<span class="c1"># print(a.create_user_profile({</span>
+<span class="c1"># 	&#39;cancreateCoSpaces&#39; : &#39;true&#39;,</span>
+<span class="c1"># 	&#39;canCreateCalls&#39; : &#39;true&#39;,</span>
+<span class="c1"># 	&#39;canUseExternalDevices&#39; : &#39;true&#39;,</span>
+<span class="c1"># 	&#39;canMakePhoneCalls&#39; : &#39;true&#39;,</span>
+<span class="c1"># 	&#39;userToUserMessagingAllowed&#39; : &#39;true&#39;</span>
+<span class="c1"># 	}))</span>
+
+
+
+
+<span class="c1"># #pp.pprint(var)</span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="c1"># Example usage: get_coSpaces()</span>
+
+<span class="c1"># 	a = Acano(&quot;192.168.12.200&quot;, &quot;administrator&quot;, &quot;HelloCisco&quot;)</span>
+
+<span class="c1"># 	var = a.get_coSpaces({</span>
+<span class="c1"># 		&#39;limit&#39; : 5,</span>
+<span class="c1"># 		&#39;offset&#39; : 5</span>
+<span class="c1"># 		})</span>
+
+<span class="c1"># 	print(var[&#39;coSpaces&#39;][&#39;coSpace&#39;])</span>
+
+
+
+
+
+<span class="c1"># 	#Create a coSpace</span>
+
+<span class="c1"># 	print(a.create_coSpace({</span>
+<span class="c1"># 	&#39;name&#39; : &#39;George\&#39;s First Space&#39;,</span>
+<span class="c1"># 	&#39;uri&#39; : &#39;http://gnisbet.com/comms.sip&#39;,</span>
+<span class="c1"># 	&#39;passcode&#39; : &#39;123&#39;,</span>
+<span class="c1"># 	&#39;defaultLayout&#39; : &#39;allEqual&#39;</span>
+<span class="c1"># 	}))</span>
+
+
+
+
+<span class="c1"># 	#Modifying a cospace</span>
+
+<span class="c1"># 	var = a.get_coSpaces()</span>
+<span class="c1"># 	coSpaceID = var[&#39;coSpaces&#39;][&#39;coSpace&#39;][1][&#39;@id&#39;]</span>
+
+<span class="c1"># 	a.modify_coSpace(coSpaceID, {</span>
+<span class="c1"># 		&#39;name&#39; : &#39;EDITED, Muhfugger&#39;</span>
+<span class="c1"># 		})</span>
+
+
+
+
+
+
+
+
+<span class="c1"># 	def __params_to_string__(self, params):</span>
+<span class="c1"># 		tR = &quot;&quot;</span>
+<span class="c1"># 		first = True</span>
+<span class="c1"># 		for pair in params.items():</span>
+<span class="c1"># 			if(first):</span>
+<span class="c1"># 				tR = pair[0] + &quot;=&quot; + str(pair[1]) + tR </span>
+<span class="c1"># 			else:</span>
+<span class="c1"># 				tR = pair[0] + &quot;=&quot; + str(pair[1]) + &quot;&amp;&quot; + tR </span>
+<span class="c1"># 			#tR = tR + pair.key() + &quot;=&quot; + pair.value()</span>
+<span class="c1"># 			first = False</span>
+<span class="c1"># 		return &quot;?&quot; + tR</span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="c1"># #TEST </span>
+
+<span class="c1"># params = { &#39;limit&#39; : 10, &#39;offset&#39; : 20}</span>
+<span class="c1"># a = Acano(&quot;192.168.12.200&quot;, &quot;admin&quot;, &quot;admin&quot;)</span>
+<span class="c1"># var = a.get_coSpaces(parameters = params_to_string(params))</span>
+
+<span class="c1"># pp = pprint.PrettyPrinter(indent=1)</span>
+<span class="c1"># pp.pprint(var)</span>
+
+
+
+
+
+<span class="c1"># os.chdir(os.path.dirname(os.path.realpath(__file__)))</span>
+<span class="c1"># tree = ET.parse(&#39;config1.xml&#39;)</span>
+<span class="c1"># root = tree.getroot()</span>
+
+
+
+<span class="c1"># 	for child in root:</span>
+<span class="c1"># 		print(child.tag)</span>
+<span class="c1"># 		print(child.attrib)</span>
+
+
+
+<span class="c1"># def createDict(element):</span>
+<span class="c1"># 	tR = {}</span>
+
+<span class="c1"># 	#If the current element is a leaf node</span>
+<span class="c1"># 	if(len(list(element)) == 0 and len(list(element.attrib))==0):</span>
+<span class="c1"># 		return {element.tag : element.text}</span>
+
+<span class="c1"># 	#If the current element HAS GOT CHILDREN</span>
+<span class="c1"># 	if(len(list(element.attrib)) != 0):</span>
+<span class="c1"># 		for attrib in element.attrib:</span>
+<span class="c1"># 			return attrib</span>
+<span class="c1"># 	#tR[&quot;coSpaces&quot;] = &quot;Hello&quot;</span>
+<span class="c1"># 	return tR</span>
+
+
+<span class="c1"># #print(createDict(root))</span>
+
+<span class="c1"># #print(root)</span>
+
+
+
+
+<span class="c1"># 	def coSpaces_coSpaceid(self, coSpaceid, parameters):</span>
+<span class="c1"># 		return self.__open__(&quot;coSpaces&quot; + coSpaceid, json.dumps(parameters).encode(&quot;utf-8&quot;))</span>
+
+<span class="c1"># 	def callBrandingProfiles(self):</span>
+<span class="c1"># 		return self.__open__(&quot;callBrandingProfiles&quot;, None)</span>
+
+<span class="c1"># 	def callBrandingProfiles(self, parameters):</span>
+<span class="c1"># 		return self.__open__(&quot;callBrandingProfiles&quot;, json.dumps(parameters).encode(&quot;utf-8&quot;))</span>
+
+<span class="c1"># 	def callBridges(self):</span>
+<span class="c1"># 		return self.__open__(&quot;callBridges&quot;, None)</span>
+
+<span class="c1"># 	def calls(self):</span>
+<span class="c1"># 		return self.__open__(&quot;calls&quot;, None)</span>
+
+<span class="c1"># 	def callLegs(self):</span>
+<span class="c1"># 		return self.__open__(&quot;callLegs&quot;, None)</span>
+
+<span class="c1"># 	def callLegProfiles(self):</span>
+<span class="c1"># 		return self.__open__(&quot;callLegProfiles&quot;, None)</span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="c1"># username = &quot;admin&quot;</span>
+<span class="c1"># password = &quot;admin&quot;</span>
+
+
+<span class="c1"># almostThere = base64.b64encode(str.encode(username + &quot;:&quot; + password))</span>
+<span class="c1"># almostThere = almostThere.decode(&quot;utf-8&quot;)</span>
+
+<span class="c1"># print(&quot;Basic YWRtaW46YWRtaW4=&quot;)</span>
+<span class="c1"># print(&quot;Basic &quot; + almostThere)</span>
+<span class="c1"># print(&quot;Basic YWRtaW46YWRtaW4=&quot; == &quot;Basic &quot; + almostThere)</span>
+
+
+
+
+
+
+
+<span class="c1"># ip = &quot;192.168.12.200&quot;</span>
+<span class="c1"># base = &quot;https://&quot; + ip + &quot;/api/v1/&quot;</span>
+
+<span class="c1"># fullLink = base + &quot;coSpaces&quot;</span>
+
+<span class="c1"># req = Request(fullLink)</span>
+<span class="c1"># username = &quot;admin&quot;</span>
+<span class="c1"># password = &quot;admin&quot;</span>
+
+<span class="c1"># req.add_header(&quot;Authorization&quot;, &quot;Basic YWRtaW46YWRtaW4=&quot;)</span>
+<span class="c1"># #req.add_header(&quot;User-Agent&quot;, &quot;API console&quot;)</span>
+<span class="c1"># #req.add_header(&quot;Connection&quot;, &quot;keep-alive&quot;)</span>
+
+<span class="c1"># ctx = ssl.create_default_context()</span>
+<span class="c1"># ctx.check_hostname = False</span>
+<span class="c1"># ctx.verify_mode = ssl.CERT_NONE</span>
+
+<span class="c1"># print()</span>
+
+<span class="c1"># data=&quot;&quot;.encode(&quot;utf-8&quot;)</span>
+
+
+<span class="c1"># #urllib.request.</span>
+
+
+<span class="c1"># with urlopen(req, context = ctx) as f:</span>
+<span class="c1">#     resp = f.read()</span>
+<span class="c1">#     print(resp)</span>
+
+
+<span class="c1"># #print(result.read())</span>
+
+
+
+
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Canopy 0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, George Nisbet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>
