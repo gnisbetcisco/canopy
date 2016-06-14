@@ -35,13 +35,11 @@ class Acano:
 	:param server_ip: The IP Address of the server
 	:param username: The username of an account with access to the API.
 	:param password: The password for your user account
-
 	:type server_ip: String
 	:type username: String
 	:type password: String
-
-	:return: return an Acano object
-	:rtype: class Acano
+	:returns: return an Acano object
+	:rtype: Acano
 
     :Example:
 
