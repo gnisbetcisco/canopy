@@ -221,8 +221,8 @@ class Acano:
 		:param coSpace_id: The ID of the coSpace to modify. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
 		:type coSpace_id: String
 
-		:param payload: Details the new state of the identified coSpace
-		:type payload: Dict
+		:param parameters: Filters for the query
+		:type parameters: Dict
 		
 		:Example:
 			>>> print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
@@ -237,9 +237,6 @@ class Acano:
 
 		:param coSpace_id: The ID of the coSpace to delete. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
 		:type coSpace_id: String
-
-		:param payload: Details the new state of the identified coSpace
-		:type payload: Dict
 		
 		:Example:
 			>>> print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
@@ -285,7 +282,7 @@ class Acano:
 			>>> 'userJid' : a.get_coSpace_members()["coSpaceMembers]
 			>>> }))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=30
 		.. note:: v1.8 upward
 		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_node_(coSpace_id, payload = payload, HTTPmethod = 'POST')
@@ -299,7 +296,7 @@ class Acano:
 		return self.__open__(("coSpaces/" + coSpace_id + "/coSpaceUsers/" + coSpace_user_id), parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_coSpace_member(self, coSpace_id, coSpace_user_id, payload = {}):
-		"""Make changes to the permissions of a user in a coSpace, using the coSpace ID as the identifier.
+		"""Make changes to the permissions of a user in a coSpace, using the coSpace ID and user ID as the identifiers.
 
 		:param coSpace_id: The ID of the coSpace for to get the user. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
 		:type coSpace_id: String
@@ -315,12 +312,26 @@ class Acano:
 			>>> 'canDestroy' : 'true'
 			>>> }))
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=30
 		.. note:: v1.8 upward
 		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_(coSpace_id, coSpace_user_id, payload, HTTPmethod = 'PUT')
 
 	def get_coSpace_member(self, coSpace_id, coSpace_user_id):
+		"""Make changes to the permissions of a user in a coSpace, using the coSpace ID and user ID as the identifiers.
+
+		:param coSpace_id: The ID of the coSpace for to get the user. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+		:type coSpace_id: String
+
+		:param coSpace_user_id: The ID of the user. 
+		:type coSpace_user_id: String
+		
+		:Example:
+			>>> print(a.get_coSpace_member("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", user_id)
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=31
+		.. note:: v1.8 upward
+		"""
 		return self._coSpaces_coSpaceID_coSpaceUsers_coSpaceUserID_node_(coSpace_id, coSpace_user_id, HTTPmethod = 'GET')
 		
 
@@ -330,9 +341,42 @@ class Acano:
 		return self.__open__(("coSpaces/" + coSpace_id + "/messages"), parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def post_message_to_coSpace(self, coSpace_id, payload = {}):
+		"""Post a message to the board of a coSpace.
+
+		:param coSpace_id: The ID of the coSpace. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+		:type coSpace_id: String
+
+		:param payload: Details the message to send. 
+		:type payload: Dict
+		
+		:Example:
+			>>> print(a.post_message_to_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload = {
+			>>>	'message' : 'hello world',
+			>>> 'from' : 'George'	
+			>>>	})
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=31
+		.. note:: v1.8 upward
+		"""
 		return self._coSpaces_coSpaceID_messages_node_(coSpace_id, payload, HTTPmethod = 'POST')
 
 	def delete_message_from_coSpace(self, coSpace_id, payload = {}):
+		"""Delete messages from the board of a coSpace
+
+		:param coSpace_id: The ID of the coSpace for to get the user. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+		:type coSpace_id: String
+
+		:param payload: Details the messages to remove. 
+		:type payload: Dict
+		
+		:Example:
+			>>> print(a.delete_message_from_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload = {
+			>>>	'maxAge' : 20
+			>>>	})
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=32
+		.. note:: v1.8 upward
+		"""
 		return self._coSpaces_coSpaceID_messages_node_(coSpace_id, payload, HTTPmethod = "delete".upper())
 
 
@@ -342,9 +386,33 @@ class Acano:
 		return self.__open__("userProfiles", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_user_profiles(self, parameters = {}):
+		"""Get the user profiles that exist within the VM.
+
+		:param parameters: Details filters for the query. 
+		:type parameters: Dict
+		
+		:Example:
+			>>> print(a.get_user_profiles()
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=66
+		.. note:: v1.8 upward
+		"""
 		return self._userProfiles_node_(parameters = parameters, HTTPmethod = 'GET')
 
 	def create_user_profile(self, payload = {}):
+		"""Create a new user profile
+
+		:param payload: Details the inital state of the new user profile. 
+		:type payload: Dict
+		
+		:Example:
+			>>> print(a.create_user_profile(payload = {
+			>>>	"cancreateCoSpaces" : True	
+			>>>	})
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=66
+		.. note:: v1.8 upward
+		"""
 		return self._userProfiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -354,22 +422,74 @@ class Acano:
 	def _userProfiles_userProfile_id_node_(self, user_profile_id, parameters = {}, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("userProfiles/" + user_profile_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
-	def get_user_profile(self, user_profile_id, parameters = {}):
+	def get_user_profile(self, user_profile_id):
+		"""Get a specific existing user profile
+
+		:param user_profile_id: Identifies the user profile to return
+		:type user_profile_id: String
+		
+		:Example:
+			>>> print(a.get_user_profile())
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=67
+		.. note:: v1.8 upward
+		"""
 		return self._userProfiles_userProfile_id_node_(user_profile_id, parameters = parameters, HTTPmethod = 'GET')
 
 	def modify_user_profile(self, user_profile_id, payload = {}):
+		"""Modify an existing user profile
+
+		:param user_profile_id: Identifies the user profile to modify
+		:type user_profile_id: String
+
+		:param payload: Details the new state of the user profile. 
+		:type payload: Dict
+		
+		:Example:
+			>>> print(a.modify_user_profile(payload = {
+			>>>	"cancreateCoSpaces" : False	
+			>>>	})
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=66
+		.. note:: v1.8 upward
+		"""
+
 		return self._userProfiles_userProfile_id_node_(user_profile_id, payload = payload, HTTPmethod = 'PUT')
 
 
 
 
 	def get_system_status(self):
+		"""Get information on the current system status, e.g. software version, uptime etc.
+		
+		:Example:
+			>>> print(a.get_system_status())
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=68
+		.. note:: v1.8 upward
+		"""
 		return self.__open__("system/status", HTTPmethod = 'GET')
 
 	def get_system_alarms(self):
+		"""Get information on the current system alarm status.
+		
+		:Example:
+			>>> print(a.get_system_alarms())
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=68
+		.. note:: v1.8 upward
+		"""		
 		return self.__open__("system/alarms", HTTPmethod = 'GET')
 
 	def get_system_database(self):
+		"""Get information on the system database status.
+		
+		:Example:
+			>>> print(a.get_system_alarms())
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=68
+		.. note:: v1.8 upward
+		"""	
 		return self.__open__("system/database", HTTPmethod = 'GET')
 
 
