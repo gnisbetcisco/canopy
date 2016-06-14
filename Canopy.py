@@ -43,11 +43,10 @@ class Acano:
 	:return: return an Acano object
 	:rtype: class Acano
 
-	.. code-block::
-		:linenos:
+    :Example:
 
-		import AcanoPy 
-		a = AcanoPy.Acano("192.168.12.10", "admin", "guest")
+    >>> import Canopy
+    >>> a = Canopy.Acano("192.168.12.100", "admin", "guest")
 
 	"""
 	def __init__(self, server_ip, username, password):
