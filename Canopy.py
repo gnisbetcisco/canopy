@@ -92,7 +92,10 @@ class Acano:
 			except xml.parsers.expat.ExpatError:
 				testString = "<class 'http.client.HTTPResponse'>"
 				if(str(type(f)) == testString):
-					return {'HTTPResponse' : f.getcode()}
+					try: 
+						return { 'HTTPResponse' : f.getcode(), '@id' : (f.getheader("Location")).split("/")[len((f.getheader("Location")).split("/"))-1]}
+					except AttributeError:
+						return { 'HTTPResponse' : f.getcode(), 'Date' : f.getheader("Date") }
 
 			'''
 				This section attempts to convert the responses that contain only a single item, eg:
@@ -215,7 +218,7 @@ class Acano:
 		"""
 		return self.__open__(("coSpaces/" + coSpace_id), payload = payload, HTTPmethod = 'PUT')
 
-	def get_coSpace(self, coSpace_id, parameters = {}):
+	def get_coSpace(self, coSpace_id):
 		"""Get the details of a coSpace, using the coSpace ID as the identifier.
 
 		:param coSpace_id: The ID of the coSpace to modify. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
@@ -230,7 +233,7 @@ class Acano:
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=27
 		.. note:: v1.8 upward
 		"""
-		return self.__open__(("coSpaces/" + coSpace_id), parameters = parameters)
+		return self.__open__(("coSpaces/" + coSpace_id))
 
 	def delete_coSpace(self, coSpace_id):
 		"""Delete a coSpace, using the coSpace ID as the identifier.
@@ -352,7 +355,7 @@ class Acano:
 		:Example:
 			>>> print(a.post_message_to_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload = {
 			>>>	'message' : 'hello world',
-			>>> 'from' : 'George'	
+			>>>	'from' : 'George'	
 			>>>	})
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=31
@@ -434,7 +437,7 @@ class Acano:
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=67
 		.. note:: v1.8 upward
 		"""
-		return self._userProfiles_userProfile_id_node_(user_profile_id, parameters = parameters, HTTPmethod = 'GET')
+		return self._userProfiles_userProfile_id_node_(user_profile_id, HTTPmethod = 'GET')
 
 	def modify_user_profile(self, user_profile_id, payload = {}):
 		"""Modify an existing user profile
@@ -487,7 +490,7 @@ class Acano:
 		:Example:
 			>>> print(a.get_system_alarms())
 
-		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=68
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=70
 		.. note:: v1.8 upward
 		"""	
 		return self.__open__("system/database", HTTPmethod = 'GET')
@@ -501,19 +504,58 @@ class Acano:
 	def _system_cdrReceivers_cdrReceiverId_node_(self, cdr_receiver_id, parameters = {}, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("system/cdrReceivers/" + cdr_receiver_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
-	def get_cdr_receiver(self, cdr_receiver_id, parameters = {}):
-		return self._system_cdrReceivers_cdrReceiverId_node_(cdr_receiver_id, parameters = parameters, HTTPmethod = 'GET')
+	def get_cdr_receiver(self, cdr_receiver_id):
+		"""Get a specific Call Detail Record Receiver by ID
+
+		:param cdr_receiver_id: Identifies the CDR to return
+		:type cdr_receiver_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=71
+		.. seealso:: https://www.acano.com/publications/2013/07/Acano-Solution-R1.6-CDR-Guide.pdf#page=6
+		.. note:: v1.8 upward
+		"""
+		return self._system_cdrReceivers_cdrReceiverId_node_(cdr_receiver_id, HTTPmethod = 'GET')
 	
 	def modify_cdr_receiver(self, cdr_receiver_id, payload = {}):
+		"""Modify a Call Detail Record Receiver by ID
+
+		:param cdr_receiver_id: Identifies the CDR to return
+		:type cdr_receiver_id: String
+
+		:param payload: Details the new state of the CDR receiver. 
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=71
+		.. seealso:: https://www.acano.com/publications/2013/07/Acano-Solution-R1.6-CDR-Guide.pdf#page=6
+		.. note:: v1.8 upward
+		"""
 		return self._system_cdrReceivers_cdrReceiverId_node_(cdr_receiver_id, payload = payload, HTTPmethod = 'PUT')
 
 	def _system_cdrReceivers_node_(self, parameters = {}, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("system/cdrReceivers", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_cdr_receivers(self, parameters = {}):
+		"""Get the Call Detail Record receivers
+
+		:param parameters: Details filters for the query 
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=71
+		.. seealso:: https://www.acano.com/publications/2013/07/Acano-Solution-R1.6-CDR-Guide.pdf#page=6
+		.. note:: v1.8 upward
+		"""
 		return self._system_cdrReceivers_node_(parameters = parameters, HTTPmethod = 'GET')
 
 	def create_cdr_receiver(self, payload = {}):
+		"""Create a new Call Detail Record receiver
+
+		:param payload: Details the initial state of the CDR receiver
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=71
+		.. seealso:: https://www.acano.com/publications/2013/07/Acano-Solution-R1.6-CDR-Guide.pdf#page=6
+		.. note:: v1.8 upward
+		"""
 		return self._system_cdrReceivers_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -525,13 +567,38 @@ class Acano:
 	def _system_profiles_node_(self, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("system/profiles", payload = payload, HTTPmethod = HTTPmethod)
 
-	def get_global_profiles(self):
+	def get_global_profile(self):
+		"""Get the global profile
+
+		:Example:
+			>>> print(a.get_global_profile())
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. note:: v1.8 upward
+		"""
 		return self._system_profiles_node_(HTTPmethod = 'GET')
 
 	def modify_global_profile(self, payload = {}):
+		"""Modify the global profile
+
+		:param payload: Details the modified state of the global profile
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. note:: v1.8 upward
+		"""
 		return self._system_profiles_node_(payload = payload, HTTPmethod = 'PUT')
 
 	def create_global_profile(self, payload = {}):
+		"""Set up the global profile
+
+		:param payload: Details the inital state of the global profile
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. note:: v1.8 upward
+		"""
+
 		return self._system_profiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -542,9 +609,37 @@ class Acano:
 		return self.__open__("turnServers", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_turn_servers(self, parameters = {}):
+		"""Get the TURN servers. TURN, in this context being Traversal Using Relay NAT
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		:Example:
+			>>> print(a.get_turn_servers())
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=50
+		.. seealso:: http://en.wikipedia.org/wiki/Traversal_Using_Relay_NAT
+		.. note:: v1.8 upward
+		"""
 		return self._turnServers_node_(parameters = parameters, HTTPmethod = 'GET')
 
 	def create_turn_server(self, payload = {}):
+		"""Set up a new TURN server. TURN, in this context being Traversal Using Relay NAT
+
+		:param payload: Details the initial state of the TURN server
+		:type payload: Dict
+
+		:Example:
+			>>> print(a.create_turn_server(payload = {
+			>>>		"ServerAddress" : "192.168.12.50"
+			>>>	}))
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=50
+		.. seealso:: http://en.wikipedia.org/wiki/Traversal_Using_Relay_NAT
+		.. note:: v1.8 upward
+		"""
 		return self._turnServers_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -554,10 +649,32 @@ class Acano:
 		return self.__open__("turnServers/" + turn_server_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_turn_server(self, turn_server_id, payload = {}):
+		"""Modify an existing TURN server. TURN, in this context being Traversal Using Relay NAT
+
+		:param payload: Details the modified state of the TURN server
+		:type payload: Dict
+
+		:Example:
+			>>> print(a.create_turn_server(payload = {
+			>>>		"ServerAddress" : "192.168.12.50"
+			>>>	}))
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=50
+		.. seealso:: http://en.wikipedia.org/wiki/Traversal_Using_Relay_NAT
+		.. note:: v1.8 upward
+		"""
 		return self.__turnServers_turnServerId_node__(turn_server_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_turn_server(self, turn_server_id, parameters = {}):
-		return self.__turnServers_turnServerId_node__(turn_server_id, parameters = parameters, HTTPmethod = 'GET')
+	def get_turn_server(self, turn_server_id):
+		"""Return a TURN server, referenced by the TURN server ID. TURN, in this context being Traversal Using Relay NAT
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=72
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=50
+		.. seealso:: http://en.wikipedia.org/wiki/Traversal_Using_Relay_NAT
+		.. note:: v1.8 upward
+		"""
+		return self.__turnServers_turnServerId_node__(turn_server_id, HTTPmethod = 'GET')
 
 	#This one returns bad request when presented with a valid TURN server ID. Not sure why...
 	def get_turn_server_status(self, turn_server_id):
@@ -573,9 +690,27 @@ class Acano:
 		return self.__open__("webBridges", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_web_bridges(self, parameters = {}):
+		"""Get information on Web Bridges
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=74
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
+		.. note:: v1.8 upward
+		"""
 		return self._webBridges_node_(parameters = parameters, HTTPmethod = 'GET')
 
 	def create_web_bridge(self, payload = {}):
+		"""Set up a new web bridge
+
+		:param payload: Details the initial state of the Web Bridge
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=75
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
+		.. note:: v1.8 upward
+		"""
 		return self._webBridges_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -584,13 +719,43 @@ class Acano:
 		return self.__open__("webBridges/" + web_bridge_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_web_bridge(self, web_bridge_id, payload = {}):
+		"""Modify an existing web bridge
+
+		:param web_bridge_id: The ID of the web bridge to modify.
+		:type web_bridge_id: String
+
+		:param payload: Details the new state of the Web Bridge
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=75
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
+		.. note:: v1.8 upward
+		"""
 		return self._webBridges_webBridgeID_node_(web_bridge_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_web_bridge(self, web_bridge_id, parameters = {}):
+	def get_web_bridge(self, web_bridge_id):
+		"""Get information for a specific web bridge, by ID
+
+		:param web_bridge_id: The ID of the web bridge for which to get information.
+		:type web_bridge_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=75
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
+		.. note:: v1.8 upward
+		"""
 		return self._webBridges_webBridgeID_node_(web_bridge_id, parameters = parameters, HTTPmethod = 'GET')
 
 
 	def update_web_bridge_customization(self, web_bridge_id, payload = {}):
+		"""Reretrieve the configured customisation archive for the specified Web Bridge and push to memory.
+
+		:param web_bridge_id: The ID of the web bridge for which to get information.
+		:type web_bridge_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=76
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
+		.. note:: v1.8 upward
+		"""
 		return self.__open__("webBridges/" + web_bridge_id + "/updateCustomization", payload = payload, HTTPmethod = POST)
 
 
@@ -1168,6 +1333,36 @@ class Acano:
 
 	def get_participant(self, participant_id):
 		return self._participants_participantID_node_(participant_id)
+
+
+	def _users_node_(self, parameters = {}, payload = {}, HTTPmethod = 'GET'):
+		return self.__open__("users", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
+
+	def get_users(self, parameters = {}):
+		return self._users_node_(parameters = parameters)
+
+
+
+
+	def _users_userID_node_(self, user_id, parameters = {}, payload = {}, HTTPmethod = 'GET'):
+		return self.__open__("users/" + user_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
+
+	def get_user(self, user_id):
+		return self._users_userID_node_(user_id)
+
+
+
+
+
+	def _users_userID_usercoSpaces_node_(self, user_id, parameters = {}, payload = {}, HTTPmethod = 'GET'):
+		return self.__open__("users/" + user_id + "/usercoSpaces", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
+
+	def get_user_coSpaces(self, user_id):
+		return self._users_userID_usercoSpaces_node_(user_id)
+
+
+
+
 
 
 
