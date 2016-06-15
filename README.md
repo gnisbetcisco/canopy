@@ -5,6 +5,7 @@ http://canopy.readthedocs.io/en/latest/
 
 The documentation is still being built in full, but here is a list of functions currently available:
 
+```python
 add_member_to_coSpace(coSpace_id, payload = {})
 cancel_ldap_sync(ldap_sync_id)
 create_access_query(payload = {})
@@ -139,3 +140,4 @@ modify_web_bridge(web_bridge_id, payload = {})
 modify_xmpp_server(payload = {})
 post_message_to_coSpace(coSpace_id, payload = {})
 update_web_bridge_customization(web_bridge_id, payload = {})
+```
