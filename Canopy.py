@@ -488,7 +488,7 @@ class Acano:
 		"""Get information on the system database status.
 		
 		:Example:
-			>>> print(a.get_system_alarms())
+			>>> print(a.get_system_database())
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=70
 		.. note:: v1.8 upward
@@ -746,7 +746,7 @@ class Acano:
 		return self._webBridges_webBridgeID_node_(web_bridge_id, parameters = parameters, HTTPmethod = 'GET')
 
 
-	def update_web_bridge_customization(self, web_bridge_id, payload = {}):
+	def update_web_bridge_customization(self, web_bridge_id):
 		"""Reretrieve the configured customisation archive for the specified Web Bridge and push to memory.
 
 		:param web_bridge_id: The ID of the web bridge for which to get information.
@@ -756,7 +756,7 @@ class Acano:
 		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
 		.. note:: v1.8 upward
 		"""
-		return self.__open__("webBridges/" + web_bridge_id + "/updateCustomization", payload = payload, HTTPmethod = POST)
+		return self.__open__("webBridges/" + web_bridge_id + "/updateCustomization", HTTPmethod = POST)
 
 
 
@@ -766,6 +766,15 @@ class Acano:
 		return self.__open__("callBridges", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call_bridges(self, parameters = {}):
+		"""Get the Call Bridge servers
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=76
+		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
+		.. note:: v1.8 upward
+		"""
 		return self._callBridges_node_(parameters = parameters, HTTPmethod = 'GET')
 
 	def create_call_bridge(self, payload = {}):
