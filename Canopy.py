@@ -766,18 +766,25 @@ class Acano:
 		return self.__open__("callBridges", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call_bridges(self, parameters = {}):
-		"""Get the Call Bridge servers
+		"""Get information on Call Bridges
 
 		:param parameters: Details filters for the query
 		:type parameters: Dict
 
 		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=76
-		.. seealso:: https://www.acano.com/publications/2013/08/Acano-solution-Deployment-Guide.pdf#page=47
 		.. note:: v1.8 upward
 		"""
 		return self._callBridges_node_(parameters = parameters, HTTPmethod = 'GET')
 
 	def create_call_bridge(self, payload = {}):
+		"""Set up a Call Bridge 
+
+		:param payload: Details the initial state of the call bridge
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=76
+		.. note:: v1.8 upward
+		"""
 		return self._callBridges_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -787,10 +794,32 @@ class Acano:
 		return self.__open__("callBridges/" + call_bridge_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_call_bridge(self, call_bridge_id, payload = {}):
+		"""Modify an existing Call Bridge 
+
+		:param call_bridge_id: The ID of the call bridge to modify
+		:type call_bridge_id: String
+
+		:param payload: Details the initial state of the call bridge
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=76
+		.. note:: v1.8 upward
+		"""
 		return self._callBridges_callBridgeID_node_(call_bridge_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_call_bridge(self, call_bridge_id, parameters = {}):
-		return self._callBridges_callBridgeID_node_(call_bridge_id, parameters = parameters, HTTPmethod = 'GET')
+	def get_call_bridge(self, call_bridge_id):
+		"""Get information on a specific call bridge
+
+		:param call_bridge_id: The ID of the call bridge to modify
+		:type call_bridge_id: String
+
+		:param payload: Details the initial state of the call bridge
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=76
+		.. note:: v1.8 upward
+		"""
+		return self._callBridges_callBridgeID_node_(call_bridge_id, HTTPmethod = 'GET')
 
 
 
@@ -799,12 +828,33 @@ class Acano:
 		return self.__open__("system/configuration/xmpp", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_xmpp_server(self):
+		"""Get information on the XMPP server
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=77
+		.. note:: v1.8 upward
+		"""
 		return self._system_configuration_xmpp_node_()
 
 	def create_xmpp_server(self, payload = {}):
+		"""Set up the XMPP server
+
+		:param payload: The initial state of the XMPP server
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=77
+		.. note:: v1.8 upward
+		"""
 		return self._system_configuration_xmpp_node_(payload = payload, HTTPmethod = 'POST')
 
 	def modify_xmpp_server(self, payload = {}):
+		"""Modify the XMPP server details
+
+		:param payload: The new state of the XMPP server
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=77
+		.. note:: v1.8 upward
+		"""
 		return self._system_configuration_xmpp_node_(payload = payload, HTTPmethod = 'PUT')
 
 
@@ -813,23 +863,65 @@ class Acano:
 	def _system_configuration_cluster_node_(self, parameters = {}, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("system/configuration/cluster", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
-	def get_bridge_cluster(self):
+	def get_call_bridge_cluster(self):
+		"""Get information on the call bridge cluster
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=77
+		.. note:: v1.8 upward
+		"""
 		return self._system_configuration_cluster_node_()
 
-	def create_bridge_cluster(self, payload = {}):
+	def create_call_bridge_cluster(self, payload = {}):
+		"""Set up the call bridge cluster
+
+		:param payload: The initial state of the call bridge cluster
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=78
+		.. note:: v1.8 upward
+		"""
 		return self._system_configuration_cluster_node_(payload = payload, HTTPmethod = 'POST')
 
-	def modify_bridge_cluster(self, payload = {}):
+	def modify_call_bridge_cluster(self, payload = {}):
+		"""Modify the existing call bridge cluster
+
+		:param payload: The new state of the call bridge cluster
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=78
+		.. note:: v1.8 upward
+		"""
 		return self._system_configuration_cluster_node_(payload = payload, HTTPmethod = 'PUT')
 
 
 	def get_system_diagnostics(self):
+		"""Retrieve system diagnostics
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=78
+		.. note:: v1.8 upward
+		"""
 		return self.__open__("system/diagnostics")
 
 	def get_system_diagnostic(self, diagnostic_id):
+		"""Retrieve an individual system diagnostic
+
+		:param diagnostic_id: The ID of the diagnostic to retrieve
+		:type diagnostic_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=79
+		.. note:: v1.8 upward
+		"""
 		return self.__open__("system/diagnostics/" + diagnostic_id)
 
 	def get_system_diagnostic_contents(self, diagnostic_id):
+		"""Retrieve the contents of an individual system diagnostic
+
+		:param diagnostic_id: The ID of the diagnostic to retrieve
+		:type diagnostic_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=79
+		.. note:: v1.8 upward
+		"""
 		return self.__open__("system/diagnostics/" + diagnostic_id + "/contents")
 
 
@@ -839,9 +931,25 @@ class Acano:
 
 
 	def get_ldap_servers(self, parameters = {}):
+		"""Retrieve information on LDAP servers
+
+		:param parameters: Details filters of the query
+		:type parameters: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=79
+		.. note:: v1.8 upward
+		"""
 		return self._ldapServers_node_(parameters = parameters)
 
 	def create_ldap_server(self, payload = {}):
+		"""Add an LDAP server
+
+		:param payload: Details the initial state of the LDAP server
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=81
+		.. note:: v1.8 upward
+		"""
 		return self._ldapServers_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -850,9 +958,28 @@ class Acano:
 		return self.__open__("ldapServers/" + ldap_server_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_ldap_server(self, ldap_server_id, payload = {}):
+		"""Modify an existing LDAP server
+
+		:param ldap_server_id: The ID of the LDAP server to modify
+		:type ldap_server_id: dict
+
+		:param payload: Details the new state of the LDAP server
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=81
+		.. note:: v1.8 upward
+		"""
 		return self._ldapServers_ldapServerID_node_(ldap_server_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_ldap_server(self, ldap_server_id):
+		"""Get an LDAP server, by ID
+
+		:param ldap_server_id: The ID of the LDAP server to get
+		:type ldap_server_id: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=81
+		.. note:: v1.8 upward
+		"""
 		return self._ldapServers_ldapServerID_node_(ldap_server_id)
 
 
@@ -862,9 +989,22 @@ class Acano:
 		return self.__open__("ldapMappings", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_ldap_mappings(self):
+		"""Get LDAP mappings
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=84
+		.. note:: v1.8 upward
+		"""
 		return self._ldapMappings_node_()
 
 	def create_ldap_mapping(self, payload = {}):
+		"""Create an LDAP mapping
+
+		:param payload: Details the initial state of the LDAP mapping
+		:type payload: dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=82
+		.. note:: v1.8 upward
+		"""
 		return self._ldapMappings_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -876,9 +1016,28 @@ class Acano:
 		return self.__open__("ldapMappings/" + ldap_mapping_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_ldap_mapping(self, ldap_mapping_id, payload = {}):
+		"""Modify an existing LDAP mapping
+
+		:param ldap_mapping_id: Details the new state of the LDAP mapping
+		:type ldap_mapping_id: String	
+
+		:param payload: Details the new state of the LDAP mapping
+		:type payload: dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=82
+		.. note:: v1.8 upward
+		"""
 		return self._ldapMappings_ldapMappingID_node_(ldap_mapping_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_ldap_mapping(self, ldap_mapping_id):
+		"""Modify an existing LDAP mapping
+
+		:param ldap_mapping_id: Details the ID of the LDAP mapping to get
+		:type ldap_mapping_id: String	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=84
+		.. note:: v1.8 upward
+		"""
 		return self._ldapMappings_ldapMappingID_node_(ldap_mapping_id)
 
 
@@ -887,9 +1046,22 @@ class Acano:
 		return self.__open__("ldapSources", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_ldap_sources(self):
+		"""Get LDAP sources
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=84
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSources_node_()
 
 	def create_ldap_source(self, payload = {}):
+		"""Create an LDAP source
+
+		:param payload: Details the initial state of the LDAP source
+		:type payload: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=85
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSources_node_(payload = {}, HTTPmethod = 'POST')
 
 
@@ -899,10 +1071,29 @@ class Acano:
 		return self.__open__("ldapSources/" + ldap_source_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_ldap_source(self, ldap_source_id, payload = {}):
+		"""Modify an existing LDAP source
+
+		:param ldap_source_id: The ID of the LDAP source to modify
+		:type ldap_source_id: String	
+
+		:param payload: Details the initial state of the LDAP source
+		:type payload: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=85
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSources_ldapSourceID_node_(ldap_source_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_ldap_source(self, ldap_source_id, parameters = {}):
-		return self._ldapSources_ldapSourceID_node_(ldap_source_id, parameters = parameters)
+	def get_ldap_source(self, ldap_source_id):
+		"""Get an LDAP source, by ID
+
+		:param ldap_source_id: The ID of the LDAP source to get
+		:type ldap_source_id: String	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=85
+		.. note:: v1.8 upward
+		"""
+		return self._ldapSources_ldapSourceID_node_(ldap_source_id)
 
 
 
@@ -911,9 +1102,25 @@ class Acano:
 		return self.__open__("ldapSyncs", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_ldap_syncs(self, parameters = {}):
+		"""Monitor pending and in-progress LDAP syncs
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=85
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSyncs_node_(parameters = parameters)
 
 	def initiate_ldap_sync(self, payload = {}):
+		"""Trigger a new LDAP sync
+
+		:param parameters: Details parameters for the LDAP sync
+		:type parameters: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=86
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSyncs_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -922,12 +1129,26 @@ class Acano:
 		return self.__open__("ldapSyncs/" + ldap_sync_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def cancel_ldap_sync(self, ldap_sync_id):
+		"""Cancel a scheduled LDAP sync. Will fail if the sync has already started.
+
+		:param ldap_sync_id: The ID of the LDAP sync to cancel
+		:type ldap_sync_id: String	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=86
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSyncs_ldapSyncID_node_(ldap_sync_id, HTTPmethod = 'delete'.upper())
 
 	def get_ldap_sync(self, ldap_sync_id, parameters = {}):
+		"""Get information on a single LDAP sync
+
+		:param ldap_sync_id: The ID of the LDAP sync to cancel
+		:type ldap_sync_id: String	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=86
+		.. note:: v1.8 upward
+		"""
 		return self._ldapSyncs_ldapSyncID_node_(ldap_sync_id, parameters = parameters)
-
-
 
 
 
@@ -936,9 +1157,22 @@ class Acano:
 		return self.__open__("directorySearchLocations", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_directory_search_locations(self):
+		"""Get information on external directory search locations: additional directory search locations to be consulted when users of Acano clients perform searches
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=87
+		.. note:: v1.8 upward
+		"""
 		return self._directorySearchLocations_node_()
 
 	def create_directory_search_location(self, payload = {}):
+		"""Add an external directory search location
+
+		:param payload: Details the initial state of the directory search location
+		:type payload: Dict			
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=88
+		.. note:: v1.8 upward
+		"""
 		return self._directorySearchLocations_node_(payload = payload, HTTPmethod = 'POST')
 
 	
@@ -948,9 +1182,28 @@ class Acano:
 		return self.__open__("directorySearchLocations/" + directory_search_location_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_directory_search_location(self, directory_search_location_id, payload = {}):
+		"""Modify an existing external directory search location
+
+		:param directory_search_location_id: The ID of the directory search location to modify
+		:type directory_search_location_id: String	
+
+		:param payload: Details the new state of the directory search location
+		:type payload: Dict			
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=88
+		.. note:: v1.8 upward
+		"""
 		return self._directorySearchLocations_directorySearchLocationID_node_(directory_search_location_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_directory_search_location(self, directory_search_location_id):
+		"""Get a single external directory search location
+
+		:param directory_search_location_id: The ID of the directory search location to get
+		:type directory_search_location_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=88
+		.. note:: v1.8 upward
+		"""
 		return self._directorySearchLocations_directorySearchLocationID_node_(directory_search_location_id)
 
 
@@ -961,9 +1214,25 @@ class Acano:
 		return self.__open__("tenants", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_tenants(self, parameters = {}):
+		"""Retrieve tenants in the system
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=93
+		.. note:: v1.8 upward
+		"""
 		return self._tenants_node_(parameters = parameters)
 
 	def create_tenant(self, payload = {}):
+		"""Create a new tenant
+
+		:param payload: Details the initial state of the tenant
+		:type payload: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=94
+		.. note:: v1.8 upward
+		"""
 		return self._tenants_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -971,9 +1240,28 @@ class Acano:
 		return self.__open__("tenants/" + tenant_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_tenant(self, tenant_id, payload = {}):
+		"""Modify an existing tenant
+
+		:param tenant_id: The ID of the tenant to modify
+		:type tenant_id: String
+
+		:param payload: Details the new state of the tenant
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=94
+		.. note:: v1.8 upward
+		"""
 		return self._tenants_tenantID_node_(tenant_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_tenant(self, tenant_id):
+		"""Get a single tenant
+
+		:param tenant_id: The ID of the tenant to get
+		:type tenant_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=94
+		.. note:: v1.8 upward
+		"""
 		return self._tenants_tenantID_node_(tenant_id)
 
 
@@ -982,9 +1270,28 @@ class Acano:
 		return self.__open__("tenantGroups", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_tenant_groups(self, parameters = {}):
+		"""Retrieve tenant groups in the system.
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=94
+		.. seealso:: https://www.acano.com/publications/2015/09/Acano-Solution-Multi-tenancy-Considerations1.pdf#page=6
+		.. note:: v1.8 upward
+		"""
 		return self._tenantGroups_node_(parameters = {})
 
 	def create_tenant_group(self, payload = {}):
+		"""Create a tenant group.
+
+		:param payload: Details the initial state of the tenant
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=95
+		.. seealso:: https://www.acano.com/publications/2015/09/Acano-Solution-Multi-tenancy-Considerations1.pdf#page=6
+		.. note:: v1.8 upward
+		"""
+
 		return self._tenantGroups_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -992,15 +1299,50 @@ class Acano:
 		return self.__open__("tenantGroups/" + tenant_group_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_tenant_group(self, tenant_group_id, payload = {}):
+		"""Modify an existing tenant group
+
+		:param tenant_group_id: The ID of the tenant group to modify
+		:type tenant_group_id: String
+
+		:param payload: Details the new state of the tenant group
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=94
+		.. seealso:: https://www.acano.com/publications/2015/09/Acano-Solution-Multi-tenancy-Considerations1.pdf#page=6
+
+		.. note:: v1.8 upward
+		"""
 		return self._tenantGroups_tenantGroupID_node_(tenant_group_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_tenant_group(self, tenant_group_id, parameters = {}):
-		return self._tenantGroups_tenantGroupID_node_(tenant_group_id, parameters = parameters, HTTPmethod = 'GET')
+	def get_tenant_group(self, tenant_group_id):
+		"""Retrieve a single existing tenant group
+
+		:param tenant_group_id: The ID of the tenant group to get
+		:type tenant_group_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=94
+		.. seealso:: https://www.acano.com/publications/2015/09/Acano-Solution-Multi-tenancy-Considerations1.pdf#page=6
+
+		.. note:: v1.8 upward
+		"""
+		return self._tenantGroups_tenantGroupID_node_(tenant_group_id, HTTPmethod = 'GET')
 
 
 
 
 	def create_access_query(self, payload = {}):
+		"""The accessQuery method finds details of how a given URI or call ID (for example, one that could
+			be associated with a coSpace) might be reached. One use is an external system discovering
+			that a coSpace with URI "sales.meeting" would be reached via the SIP URI
+			"sales.meeting@example.com".
+
+		:param payload: Details the query
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=96
+
+		.. note:: v1.8 upward
+		"""
 		return self.__open__(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1011,10 +1353,36 @@ class Acano:
 	def _coSpaces_coSpaceID_accessMethods_node_(self, coSpace_id, parameters = {}, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("coSpaces/" + coSpace_id + "/accessMethods", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
-	def get_coSpace_access_methods(self, coSpace_id, parameters = {}, payload = {}):
+	def get_coSpace_access_methods(self, coSpace_id, parameters = {}):
+		"""Retrieve the access methods for a coSpace. Access methods define URI / passcode / callID combinations that can be used to access
+a coSpace
+
+		:param coSpace_id: The ID of the coSpace for which to retrieve access methods
+		:type coSpace_id: String
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=32
+
+		.. note:: v1.8 upward
+		"""	
 		return self._coSpaces_coSpaceID_accessMethods_node_(coSpace_id, parameters = parameters)
 
 	def create_coSpace_access_method(self, coSpace_id, payload = {}):
+		"""Create a new access method for a coSpace. Access methods define URI / passcode / callID combinations that can be used to access
+a coSpace
+
+		:param coSpace_id: The ID of the coSpace for which to add an access method
+		:type coSpace_id: String
+
+		:param payload: Details the initial state of the access method
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=32
+
+		.. note:: v1.8 upward
+		"""	
 		return self._coSpaces_coSpaceID_accessMethods_node_(coSpace_id, payload = payload, HTTPmethod = 'POST')
 
 
@@ -1026,10 +1394,39 @@ class Acano:
 		return self.__open__("coSpaces/" + coSpace_id + "/accessMethods/" + access_method_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_coSpace_access_method(self, coSpace_id, access_method_id, payload = {}):
+		"""Modify an existing access method for a coSpace. Access methods define URI / passcode / callID combinations that can be used to access
+a coSpace
+
+		:param coSpace_id: The ID of the coSpace in which to modify an access method
+		:type coSpace_id: String
+
+		:param access_method_id: The ID of the access method to modify.
+		:type access_method_id: String		
+
+		:param payload: Details the new state of the access method
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=33
+
+		.. note:: v1.8 upward
+		"""	
 		return self._coSpaces_coSpaceID_accessmethods_accessMethodID_node_(coSpace_id, access_method_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_coSpace_access_method(self, coSpace_id, access_method_id, parameters = {}):
-		return self._coSpaces_coSpaceID_accessmethods_accessMethodID_node_(self, coSpace_id, access_method_id, parameters = parameters, HTTPmethod = 'GET')
+	def get_coSpace_access_method(self, coSpace_id, access_method_id):
+		"""Retrieve a single access method for a coSpace. Access methods define URI / passcode / callID combinations that can be used to access
+a coSpace
+
+		:param coSpace_id: The ID of the coSpace in which to get an access method
+		:type coSpace_id: String
+
+		:param access_method_id: The ID of the access method to get.
+		:type access_method_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=33
+
+		.. note:: v1.8 upward
+		"""	
+		return self._coSpaces_coSpaceID_accessmethods_accessMethodID_node_(self, coSpace_id, access_method_id, HTTPmethod = 'GET')
 
 
 	#Generates bad request. Not sure why...
