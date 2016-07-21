@@ -1439,9 +1439,27 @@ a coSpace
 		return self.__open__("outboundDialPlanRules", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_outbound_dial_plan_rules(self, parameters = {}):
+		"""Retrieve outbound dial plan rules. 
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=35
+
+		.. note:: v1.8 upward
+		"""	
 		return self._outboundDialPlanRules_node_(parameters = parameters)
 
 	def create_outbound_dial_plan_rule(self, payload = {}):
+		"""Create a new outbound dial plan rule.
+
+		:param payload: Details the initial state of the dial plan rule.
+		:type payload: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=35
+
+		.. note:: v1.8 upward
+		"""	
 		return self._outboundDialPlanRules_node_(payload = {}, HTTPmethod = 'POST')
 
 
@@ -1449,10 +1467,31 @@ a coSpace
 		return self.__open__("outboundDialPlanRules/" + outbound_dial_plan_rule_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_outbound_dial_plan_rule(self, outbound_dial_plan_rule_id, payload = {}):
+		"""Create a new outbound dial plan rule.
+		
+		:param outbound_dial_plan_rule_id: The ID of the dial plan rule to modify
+		:type outbound_dial_plan_rule_id: String
+
+		:param payload: Details the new state of the dial plan rule.
+		:type payload: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=35
+
+		.. note:: v1.8 upward
+		"""	
 		return self._outboundDialPlanRules_outboundDialPlanRuleID_node_(outbound_dial_plan_rule_id, payload = payload, HTTPmethod = 'PUT')
 
-	def get_outbound_dial_plan_rule(self, outbound_dial_plan_rule_id, parameters = {}):
-		return self._outboundDialPlanRules_outboundDialPlanRuleID_node_(outbound_dial_plan_rule_id, parameters = parameters)
+	def get_outbound_dial_plan_rule(self, outbound_dial_plan_rule_id):
+		"""Retrieve a single outbound dial plan rule
+		
+		:param outbound_dial_plan_rule_id: The ID of the dial plan rule to retrieve
+		:type outbound_dial_plan_rule_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=35
+
+		.. note:: v1.8 upward
+		"""	
+		return self._outboundDialPlanRules_outboundDialPlanRuleID_node_(outbound_dial_plan_rule_id)
 
 
 
@@ -1463,9 +1502,27 @@ a coSpace
 		return self.__open__("inboundDialPlanRules", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_inbound_dial_plan_rules(self, parameters = {}):
+		"""Retrieve inbound dial plan rules. 
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=37
+
+		.. note:: v1.8 upward
+		"""	
 		return self._inboundDialPlanRules_node_(parameters = parameters)
 
 	def create_inbound_dial_plan_rule(self, payload = {}):
+		"""Create a new inbound dial plan rule.
+
+		:param payload: Details the initial state of the dial plan rule.
+		:type payload: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=37
+
+		.. note:: v1.8 upward
+		"""	
 		return self._inboundDialPlanRules_node_(payload = {}, HTTPmethod = 'POST')
 
 
@@ -1473,9 +1530,30 @@ a coSpace
 		return self.__open__("inboundDialPlanRules/" + inbound_dial_plan_rule_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_inbound_dial_plan_rule(self, inbound_dial_plan_rule_id, payload = {}):
+		"""Create a new inbound dial plan rule.
+		
+		:param inbound_dial_plan_rule_id: The ID of the dial plan rule to modify
+		:type inbound_dial_plan_rule_id: String
+
+		:param payload: Details the new state of the dial plan rule.
+		:type payload: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=35
+
+		.. note:: v1.8 upward
+		"""	
 		return self._inboundDialPlanRules_inboundDialPlanRuleID_node_(inbound_dial_plan_rule_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_inbound_dial_plan_rule(self, inbound_dial_plan_rule_id, parameters = {}):
+		"""Retrieve a single inbound dial plan rule. 
+		
+		:param inbound_dial_plan_rule_id: The ID of the dial plan rule to retrieve
+		:type inbound_dial_plan_rule_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=37
+
+		.. note:: v1.8 upward
+		"""	
 		return self._inboundDialPlanRules_inboundDialPlanRuleID_node_(inbound_dial_plan_rule_id, parameters = parameters)
 
 
@@ -1485,9 +1563,29 @@ a coSpace
 		return self.__open__("forwardingDialPlanRules", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_forwarding_dial_plan_rules(self, parameters = {}):
+		"""Retrieve the forwarding dial plan rules. 
+		
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=38
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=39
+
+		.. note:: v1.8 upward
+		"""	
 		return self._forwardingDialPlanRules_node_(parameters)
 
 	def create_forwarding_dial_plan_rule(self, payload = {}):
+		"""Create a new forwarding dial plan rule. 
+		
+		:param payload: Details the initial state of the rule
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=38
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=39
+
+		.. note:: v1.8 upward
+		"""	
 		return self._forwardingDialPlanRules_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1496,9 +1594,32 @@ a coSpace
 		return self.__open__("forwardingDialPlanRules/" + forwarding_dial_plan_rule_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_forwarding_dial_plan_rule(self, forwarding_dial_plan_rule_id, payload = {}):
+		"""Modify an existing forwarding dial plan rule. 
+		
+		:param forwarding_dial_plan_rule_id: The ID of the rule to modify
+		:type forwarding_dial_plan_rule_id: Dict
+
+		:param payload: Details the new state of the rule
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=38
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=39
+
+		.. note:: v1.8 upward
+		"""	
 		return self._forwardingDialPlanRules_forwardingDialPlanRuleID_node_(forwarding_dial_plan_rule_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_forwarding_dial_plan_rule(self, forwarding_dial_plan_rule_id):
+		"""Retrieve a single forwarding dial plan rule. 
+		
+		:param forwarding_dial_plan_rule_id: The ID of the rule to modify
+		:type forwarding_dial_plan_rule_id: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=38
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=40
+
+		.. note:: v1.8 upward
+		"""	
 		return self._forwardingDialPlanRules_forwardingDialPlanRuleID_node_(forwarding_dial_plan_rule_id)
 
 
@@ -1508,9 +1629,27 @@ a coSpace
 		return self.__open__("calls", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_calls(self, parameters = {}):
+		"""Retrieve information on active calls
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=41
+
+		.. note:: v1.8 upward
+		"""	
 		return self._calls_node(parameters = parameters)
 
 	def create_call(self, payload = {}):
+		"""Create a new call
+
+		:param payload: Details of the call
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=41
+
+		.. note:: v1.8 upward
+		"""	
 		return self._calls_node(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1520,9 +1659,24 @@ a coSpace
 		return self.__open__("calls/" + call_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call(self, call_id):
+		"""Retrieve information on a single active call
+
+		:param call_id: The ID of the call for which to retrieve information
+		:type call_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=42
+
+		.. note:: v1.8 upward
+		"""	
 		return self._calls_callID_node(call_id)
 
 	def delete_call(self, call_id):
+		"""Cancel an in-progress call
+
+		:param call_id: The ID of the call
+		:type call_id: String
+
+		"""	
 		return self._calls_callID_node(call_id, HTTPmethod = "delete".upper())
 
 
@@ -1534,9 +1688,29 @@ a coSpace
 		return self.__open__("callProfiles", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call_profiles(self, parameters = {}):
+		"""Retrieve information on call profiles
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=97
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=42
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callProfiles_node_(parameters = parameters)
 
 	def create_call_profile(self, payload = {}):
+		"""Create a new call profile
+
+		:param payload: Details the initial state of the call profile
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=97
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=43
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callProfiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1547,9 +1721,32 @@ a coSpace
 		return self.__open__("callProfiles/" + call_profile_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_call_profile(self, call_profile_id, payload = {}):
+		"""Modify an existing call profile
+
+		:param call_profile_id: The ID of the call profile to modify
+		:type call_profile_id: String
+
+		:param payload: Details the new state of the call profile
+		:type payload: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=97
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=43
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callProfiles_callProfileID_node(call_profile_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_call_profile(self, call_profile_id):
+		"""Retrieve information on a single call profile
+
+		:param call_profile_id: The ID of the call profile to modify
+		:type call_profile_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=97
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=43
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callProfiles_callProfileID_node(call_profile_id)
 
 
@@ -1559,12 +1756,33 @@ a coSpace
 		return self.__open__("callLegs", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call_legs(self, parameters = {}):
+		"""Retrieve information on call legs
+
+		:param parameters: Details filter for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=43
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegs_node_(parameters = parameters)
 
 
 
 
 	def create_call_leg(self, call_id, payload = {}):
+		"""Create a new call leg
+
+		:param call_id: The ID of the call for which to create the call leg
+		:type call_id: String
+
+		:param payload: Details the initial state of the call leg
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=45
+
+		.. note:: v1.8 upward
+		"""	
 		return self.__open__("calls/" + call_id + "/callLegs", payload = payload, HTTPmethod = 'POST')
 
 
@@ -1574,9 +1792,30 @@ a coSpace
 		return self.__open__("callLegs/" + call_leg_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_call_leg(self, call_leg_id, payload = {}):
+		"""Modify an existing call leg
+
+		:param call_leg_id: The ID of the call leg to modify
+		:type call_leg_id: String
+
+		:param payload: Details the new state of the call leg
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=45
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegs_callLegID_node_(call_leg_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_call_leg(self, call_leg_id):
+		"""Retrieve information on a single call leg.
+
+		:param call_leg_id: The ID of the call leg to get
+		:type call_leg_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=47
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegs_callLegID_node_(call_leg_id)
 
 
@@ -1585,9 +1824,27 @@ a coSpace
 		return self.__open__("callLegProfiles", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call_leg_profiles(self, parameters = {}):
+		"""Retrieve information on call leg profiles
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=48
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegProfiles_node_(parameters = parameters)
 
 	def create_call_leg_profile(self, payload = {}):
+		"""Create a new call leg profile
+
+		:param payload: Details the initial state of the call leg profile
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=49
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegProfiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1596,15 +1853,48 @@ a coSpace
 		return self.__open__("callLegProfiles/" + call_leg_profile_id, parameters = {}, payload = {}, HTTPmethod = HTTPmethod)
 
 	def modify_call_leg_profile(self, call_leg_profile_id, payload = {}):
+		"""Modify an existing call leg profile
+
+		:param call_leg_profile_id: The ID of the call leg profile to modify
+		:type call_leg_profile_id: String		
+
+		:param payload: Details the new state of the call leg profile
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=49
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegProfiles_callLegProfileID_node_(call_leg_profile_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_call_leg_profile(self, call_leg_profile_id):
+		"""Retrieve information on a single call leg profile
+
+		:param call_leg_profile_id: The ID of the call leg profile to get
+		:type call_leg_profile_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=51
+
+		.. note:: v1.8 upward
+		"""	
 		return self._callLegProfiles_callLegProfileID_node_(call_leg_profile_id)
 
 
 
-	def get_call_leg_profile_trace(self, call_leg_id):
-		return self.__open__("callLegs/" + call_leg_profile_id + "/callLegProfileTrace")
+	def get_call_leg_profile_trace(self, call_leg_id, parameters = {}):
+		"""Retrieve information on a call leg profile trace
+
+		:param call_leg_id: The ID of the call leg to get
+		:type call_leg_id: String
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=52
+
+		.. note:: v1.8 upward
+		"""	
+		return self.__open__("callLegs/" + call_leg_profile_id + "/callLegProfileTrace", parameters = parameters)
 
 
 
@@ -1612,9 +1902,34 @@ a coSpace
 		return self.__open__("dialTransforms", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_dial_transforms(self, parameters = {}):
+		"""Retrieve information on transforms set up for outbound calls.
+
+		:param call_leg_id: The ID of the call leg to get
+		:type call_leg_id: String
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=54
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=55
+
+
+		.. note:: v1.6 upward
+		"""	
 		return self._dialTransforms_node_(parameters = parameters)
 
 	def create_dial_transform(self, payload = {}):
+		"""Create a new dial transform for outbound calls
+
+		:param payload: Details the initial state of the dial transform
+		:type payload: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=54
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=55
+
+
+		.. note:: v1.6 upward
+		"""	
 		return self._dialTransforms_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1623,9 +1938,34 @@ a coSpace
 		return self.__open__("dialTransforms/" + dial_transform_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_dial_transform(self, dial_transform_id, payload = {}):
+		"""Modify an existing dial transform
+
+		:param dial_transform_id: The ID of the dial transform to modify
+		:type dial_transform_id: String			
+
+		:param payload: Details the initial state of the dial transform
+		:type payload: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=54
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=55
+
+
+		.. note:: v1.6 upward
+		"""	
 		return self._dialTransforms_dialTransformID_node_(dial_transform_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_dial_transform(self, dial_transform_id):
+		"""Retrieve information on a single dial transform
+
+		:param dial_transform_id: The ID of the dial transform to get
+		:type dial_transform_id: String				
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=54
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=56
+
+
+		.. note:: v1.6 upward
+		"""	
 		return self._dialTransforms_dialTransformID_node_(dial_transform_id)
 
 
@@ -1635,9 +1975,27 @@ a coSpace
 		return self.__open__("callBrandingProfiles", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_call_branding_profiles(self, parameters = {}):
+		"""Retrieve information on call branding profiles
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict				
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=57
+
+		.. note:: v1.6 upward
+		"""	
 		return self._callBrandingProfiles_node_(parameters = parameters)
 
 	def create_call_branding_profile(self, payload = {}):
+		"""Create a call branding profile
+
+		:param payload: Details the initial state of the call branding profile.
+		:type payload: Dict				
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=57
+		
+		.. note:: v1.6 upward
+		"""	
 		return self._callBrandingProfiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1647,9 +2005,30 @@ a coSpace
 		return self.__open__("callBrandingProfiles/" + call_branding_profile_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_call_branding_profile(self, call_branding_profile_id, payload = {}):
+		"""Modify an existing call branding profile
+
+		:param call_branding_profile_id: The ID of the call branding profile to modify
+		:type call_branding_profile_id: String		
+
+		:param payload: Details the new state of the call branding profile.
+		:type payload: Dict				
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=57
+		
+		.. note:: v1.6 upward
+		"""	
 		return self._callBrandingProfiles_callBrandingProfileID_node(call_branding_profile_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_call_branding_profile(self, call_branding_profile_id):
+		"""Retrieve information on a single call branding profile
+
+		:param call_branding_profile_id: The ID of the call branding profile to get
+		:type call_branding_profile_id: String					
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=58
+		
+		.. note:: v1.6 upward
+		"""	
 		return self._callBrandingProfiles_callBrandingProfileID_node(call_branding_profile_id)
 
 
@@ -1660,9 +2039,29 @@ a coSpace
 		return self.__open__("dtmfProfiles", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_dtmf_profiles(self, parameters = {}):
+		"""Create a new DTMF profile	
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict				
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=58
+		.. seealso:: https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling
+		
+		.. note:: v1.6 upward
+		"""	
 		return self._dtmfProfiles_node_(parameters = parameters)
 
 	def create_dtmf_profile(self, payload = {}):
+		"""Create a DTMF profile	
+
+		:param payload: Details the initial state of the DTMF profile
+		:type payload: Dict				
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=59
+		.. seealso:: https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling
+		
+		.. note:: v1.6 upward
+		"""
 		return self._dtmfProfiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1671,9 +2070,32 @@ a coSpace
 		return self.__open__("dtmfProfiles/" + dtmf_profile_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_dtmf_profile(self, dtmf_profile_id, payload = {}):
+		"""Modify a DTMF profile	
+
+		:param dtmf_profile_id: The ID of the DTMF profile to modify
+		:type dtmf_profile_id: String
+
+		:param payload: Details the new state of the DTMF profile
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=59
+		.. seealso:: https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling
+		
+		.. note:: v1.6 upward
+		"""
 		return self._dtmfProfiles_dtmfProfileID_node_("dtmfProfiles/" + dtmf_profile_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_dtmf_profile(self, dtmf_profile_id):
+		"""Retrieve information on a single DTMF profile
+
+		:param dtmf_profile_id: The ID of the DTMF profile to get
+		:type dtmf_profile_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=59
+		.. seealso:: https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling
+		
+		.. note:: v1.6 upward
+		"""
 		return self._dtmfProfiles_dtmfProfileID_node_(dtmf_profile_id)
 
 
@@ -1683,9 +2105,27 @@ a coSpace
 		return self.__open__("ivrs", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_ivrs(self, parameters = {}):
+		"""Retrieve information on IVRs
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=59
+		.. seealso:: https://en.wikipedia.org/wiki/Interactive_voice_response
+		
+		"""
 		return self._ivrs_node_(parameters = parameters)
 
 	def create_ivr(self, payload = {}):
+		"""Create a new IVR
+
+		:param payload: Details the initial state of the IVR
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=60
+		.. seealso:: https://en.wikipedia.org/wiki/Interactive_voice_response
+		
+		"""
 		return self._ivrs_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1694,9 +2134,30 @@ a coSpace
 		return self.__open__("ivrs/" + ivr_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_ivr(self, ivr_id, payload = {}):
+		"""Modify an existing IVR
+
+		:param ivr_id: The ID of the IVR to modify
+		:type ivr_id: String		
+
+		:param payload: Details the new state of the IVR
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=60
+		.. seealso:: https://en.wikipedia.org/wiki/Interactive_voice_response
+		
+		"""
 		return self._ivrs_ivrID_node(ivr_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_ivr(self, ivr_id):
+		"""Retrieve information on a single IVR
+
+		:param ivr_id: The ID of the IVR to get
+		:type ivr_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=60
+		.. seealso:: https://en.wikipedia.org/wiki/Interactive_voice_response
+		
+		"""
 		return self._ivrs_ivrID_node(ivr_id)
 
 
@@ -1706,9 +2167,23 @@ a coSpace
 		return self.__open__("ivrBrandingProfiles", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_ivr_branding_profiles(self, parameters = {}):
+		"""Retrieve information IVR branding profiles
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=61	
+		"""
 		return self._ivrBrandingProfiles_node_(parameters = {})
 
 	def create_ivr_branding_profile(self, payload = {}):
+		"""Create a new IVR branding profile
+
+		:param payload: Details the initial state of the profile
+		:type payload: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=61	
+		"""
 		return self._ivrBrandingProfiles_node_(payload = payload, HTTPmethod = 'POST')
 
 
@@ -1718,9 +2193,26 @@ a coSpace
 		return self.__open__("ivrBrandingProfiles/" + ivr_branding_profile_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def modify_ivr_branding_profile(self, ivr_branding_profile_id, payload = {}):
+		"""Modify an existing IVR branding profile
+
+		:param ivr_branding_profile_id: The ID of the IVR branding profile to modify
+		:type ivr_branding_profile_id: String	
+
+		:param payload: Details the new state of the profile
+		:type payload: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=61	
+		"""
 		return self._ivrBrandingProfiles_ivrBrandingProfileID_node_(ivr_branding_profile_id, payload = payload, HTTPmethod = 'PUT')
 
 	def get_ivr_branding_profile(self, ivr_branding_profile_id):
+		"""Retrieve information on a single IVR branding profile
+
+		:param ivr_branding_profile_id: The ID of the IVR branding profile to get
+		:type ivr_branding_profile_id: String	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=61	
+		"""
 		return self._ivrBrandingProfiles_ivrBrandingProfileID_node_(ivr_branding_profile_id)
 
 
@@ -1730,6 +2222,13 @@ a coSpace
 		return self.__open__("participants", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_participants(self, parameters = {}):
+		"""Get information on participants
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict	
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=61
+		"""
 		return self._participants_node_(parameters = parameters)
 
 
@@ -1738,13 +2237,37 @@ a coSpace
 		return self.__open__("participants/" + participant_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_participant(self, participant_id):
+		"""Get information on a participant
+
+		:param participant_id: The ID of the participant to get
+		:type participant_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=62
+		"""
 		return self._participants_participantID_node_(participant_id)
+
+	def get_participant_call_legs(self, participant_id):
+		"""Get information on a participant's call legs
+
+		:param participant_id: The ID of the participant for which to get call legs
+		:type participant_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=63
+		"""
+		return self.__open__("participant/" + participant_id + "callLegs", HTTPmethod = 'GET')
 
 
 	def _users_node_(self, parameters = {}, payload = {}, HTTPmethod = 'GET'):
 		return self.__open__("users", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_users(self, parameters = {}):
+		"""Get information on users
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=65
+		"""
 		return self._users_node_(parameters = parameters)
 
 
@@ -1754,6 +2277,13 @@ a coSpace
 		return self.__open__("users/" + user_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_user(self, user_id):
+		"""Get information on a single user
+
+		:param user_id: The ID of the user
+		:type user_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=65
+		"""
 		return self._users_userID_node_(user_id)
 
 
@@ -1764,6 +2294,13 @@ a coSpace
 		return self.__open__("users/" + user_id + "/usercoSpaces", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
 
 	def get_user_coSpaces(self, user_id):
+		"""Get information on the coSpaces with which a user is currently associated
+
+		:param user_id: The ID of the user
+		:type user_id: String		
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=65
+		"""
 		return self._users_userID_usercoSpaces_node_(user_id)
 
 
