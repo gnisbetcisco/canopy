@@ -2306,6 +2306,63 @@ a coSpace
 
 
 
+	def _recorders_node_(self, parameters = {}, payload = {}, HTTPmethod = 'GET'):
+		return self.__open__("recorders", parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
+
+	def get_recorders(self, parameters = {}):
+		"""Get information on meeting recorders
+
+		:param parameters: Details filters for the query
+		:type parameters: Dict		
+
+		.. seealso:: https://www.acano.com/publications/2016/06/Solution-API-Reference-R1_9.pdf#page=105
+
+		.. note:: v1.9 upward
+		"""
+		return self._recorders_node_(parameters = parameters)
+
+	def create_recorder(self, payload = {}):
+		"""Create a meeting recorder
+
+		:param payload: Details the initial state of the recorder
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=106
+
+		.. note:: v1.9 upward
+		"""
+		return self._recorders_node_(payload = payload, HTTPmethod = 'POST')
+
+
+	def _recorders_recorderid_node(self, recorder_id, parameters = {}, payload = {}, HTTPmethod = 'GET'):
+		return self.__open__("recorders/" + recorder_id, parameters = parameters, payload = payload, HTTPmethod = HTTPmethod)
+
+	def modify_recorder(self, recorder_id, payload = {}):
+		"""Modify an existing meeting recorder
+
+		:param recorder_id: The ID of the recorder to modify
+		:type recorder_id: String
+
+		:param payload: Details the new state of the recorder
+		:type payload: Dict
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=106
+
+		.. note:: v1.9 upward
+		"""
+		return self._recorders_recorderid_node(recorder_id, payload = payload, HTTPmethod = 'PUT')
+
+	def get_recorder(self, recorder_id):
+		"""Get information on a single recorder
+
+		:param recorder_id: The ID of the recorder to get
+		:type recorder_id: String
+
+		.. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=106
+
+		.. note:: v1.9 upward
+		"""
+		return self._recorders_recorderid_node(recorder_id)
 
 
 
