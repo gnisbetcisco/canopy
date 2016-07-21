@@ -3,7 +3,7 @@
 The full documentation can be viewed here:
 http://canopy.readthedocs.io/en/latest/
 
-The documentation is still being built in full, but here is a list of functions currently available:
+Getting started, quickly:
 
 ```python
 
